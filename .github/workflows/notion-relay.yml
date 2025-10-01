@@ -1,0 +1,52 @@
+name: Notion Relay
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/notion-relay-publish.js'
+      - 'codex/collaboration/notion-relay.json'
+      - '.github/workflows/notion-relay.yml'
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install
+        run: npm ci
+      - name: Generate plan
+        run: npm run notion:relay:plan > notion-relay-plan.json
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: notion-relay-plan
+          path: notion-relay-plan.json
+
+  publish:
+    needs: plan
+    if: ${{ github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/main') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install
+        run: npm ci
+      - name: Publish to Notion
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DB_HEARTBEAT_ID: ${{ secrets.NOTION_DB_HEARTBEAT_ID }}
+          NOTION_DB_FINANCIAL_MODELS_ID: ${{ secrets.NOTION_DB_FINANCIAL_MODELS_ID }}
+          NOTION_DB_CLIENT_CONFIGS_ID: ${{ secrets.NOTION_DB_CLIENT_CONFIGS_ID }}
+          NOTION_RELAY_MAX_PAGES: ${{ vars.NOTION_RELAY_MAX_PAGES }}
+        run: npm run notion:relay:publish
+

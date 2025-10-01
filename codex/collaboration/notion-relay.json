@@ -1,0 +1,29 @@
+{
+  "heartbeat": {
+    "schema_mapping": {
+      "Name": { "type": "title" },
+      "Status": { "type": "select" },
+      "Tags": { "type": "multi_select" }
+    },
+    "items": [
+      { "Name": "Relay Heartbeat", "Status": "GREEN", "Tags": ["relay", "heartbeat"] }
+    ]
+  },
+  "financial_models": {
+    "schema_mapping": {
+      "Name": { "type": "title" },
+      "ARR": { "type": "number" },
+      "Stage": { "type": "select" }
+    },
+    "items": []
+  },
+  "client_configs": {
+    "schema_mapping": {
+      "Name": { "type": "title" },
+      "ClientId": { "type": "rich_text" },
+      "Tier": { "type": "select" }
+    },
+    "items": []
+  }
+}
+

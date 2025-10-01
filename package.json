@@ -14,7 +14,9 @@
     "prepare": "npm run build",
     "watch": "tsc --watch",
     "inspector": "tsc && node -e \"const fs = require('fs'); if (fs.existsSync('.env.example')) { fs.copyFileSync('.env.example', 'build/.env'); } fs.chmodSync('build/index.js', '755')\" && npx @modelcontextprotocol/inspector build/index.js",
-    "test-connection": "node test-connection.js"
+    "test-connection": "node test-connection.js",
+    "notion:relay:plan": "node scripts/notion-relay-publish.js",
+    "notion:relay:publish": "node scripts/notion-relay-publish.js --publish"
   },
   "files": [
     "build",
@@ -39,6 +41,7 @@
   "homepage": "https://github.com/vizioz/teamwork-mcp#readme",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.6.1",
+    "@notionhq/client": "^2.2.15",
     "@types/minimist": "^1.2.5",
     "axios": "^1.8.2",
     "dotenv": "^16.4.5",
