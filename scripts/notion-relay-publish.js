@@ -82,7 +82,7 @@ async function main() {
         if (val == null || val === "") continue;
         properties[propName] = { select: { name: String(val) } };
       } else if (type === "multi_select") {
-        const arr = Array.isArray(val) ? val : (val != null ? [val] : []);
+        const arr = Array.isArray(val) ? val : (val !== null && val !== undefined ? [val] : []);
         properties[propName] = { multi_select: arr.map((x) => ({ name: String(x) })) };
       } else if (type === "created_time") {
         // Notion ignores created_time on create; skip to avoid errors
