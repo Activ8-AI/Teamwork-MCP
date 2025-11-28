@@ -59,6 +59,7 @@ import { enqueueHandoffDefinition as enqueueHandoff, handleEnqueueHandoff } from
 // Conversations
 import { ingestConversationEventDefinition as ingestConversationEvent, handleIngestConversationEvent } from './conversations/ingestEvent.js';
 import { synthesizeConversationThreadDefinition as synthesizeConversationThread, handleSynthesizeConversationThread } from './conversations/synthesizeThread.js';
+import { ingestCompetitorDeltaDefinition as ingestCompetitorDelta, handleIngestCompetitorDelta } from './intelligence/ingestCompetitorDelta.js';
 
 // Define a structure that pairs tool definitions with their handlers
 interface ToolPair {
@@ -107,6 +108,7 @@ const toolPairs: ToolPair[] = [
   ,{ definition: enqueueHandoff, handler: handleEnqueueHandoff }
   ,{ definition: ingestConversationEvent, handler: handleIngestConversationEvent }
   ,{ definition: synthesizeConversationThread, handler: handleSynthesizeConversationThread }
+  ,{ definition: ingestCompetitorDelta, handler: handleIngestCompetitorDelta }
 ];
 
 // Extract just the definitions for the toolDefinitions array
@@ -154,4 +156,5 @@ export { handleGetProjectsAllocationsTime } from './time/getAllocationTime.js';
 export { handleGetProjectPerson } from './people/getProjectPerson.js';
 export { handleGetProjectsReportingUserTaskCompletion } from './reporting/getUserTaskCompletion.js';
 export { handleGetProjectsReportingUtilization } from './people/getUtilization.js';
-export { handleGetTimezones } from './core/getTimezones.js'; 
+export { handleGetTimezones } from './core/getTimezones.js';
+export { handleIngestCompetitorDelta } from './intelligence/ingestCompetitorDelta.js';

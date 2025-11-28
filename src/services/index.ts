@@ -45,6 +45,7 @@ import getTimezones from './core/getTimezones.js';
 import enqueueHandoff from './orchestration/enqueueHandoff.js';
 import ingestEvent from './conversations/ingestEvent.js';
 import synthesizeThread from './conversations/synthesizeThread.js';
+import { ingestCompetitorDelta, getCompetitorDefinitionMap } from './intelligence/competitorIntelligenceEngine.js';
 
 // Reporting exports
 import getUserTaskCompletion from './reporting/getUserTaskCompletion.js';
@@ -61,6 +62,7 @@ export { getUserTaskCompletion, getUtilizationCsv };
 export { getTimezones };
 export { enqueueHandoff };
 export { ingestEvent, synthesizeThread };
+export { ingestCompetitorDelta, getCompetitorDefinitionMap };
 
 // Default export with all services
 export default {
@@ -116,5 +118,9 @@ export default {
 
   // Conversations
   ingestEvent,
-  synthesizeThread
+  synthesizeThread,
+
+  // Intelligence
+  ingestCompetitorDelta,
+  getCompetitorDefinitionMap
 };  
