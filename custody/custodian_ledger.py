@@ -58,6 +58,5 @@ def get_last_events(n: int = 10) -> List[Dict[str, Any]]:
 def clear_ledger() -> None:
     """Clear all events from the ledger. Intended for test isolation."""
     with sqlite3.connect(DB_PATH) as conn:
-        _ensure_table(conn)
         conn.execute("DELETE FROM ledger")
         conn.commit()

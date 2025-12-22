@@ -7,5 +7,3 @@ def isolate_ledger():
     """Clear the ledger before each test to ensure test isolation."""
     clear_ledger()
     yield
-    # Optionally clear after test as well for cleanup
-    clear_ledger()
