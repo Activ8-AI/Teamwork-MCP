@@ -1,3 +1,8 @@
+from custody.custodian_ledger import log_event
+
+
+def create_teamwork_task(title: str, description: str) -> None:
+    log_event("TEAMWORK_TASK", {"title": title, "description": description})
 from __future__ import annotations
 
 from typing import Dict
