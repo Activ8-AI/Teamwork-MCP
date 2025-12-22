@@ -1,5 +1,4 @@
 import os
-import sqlite3
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
@@ -17,14 +16,14 @@ def isolated_ledger():
     preventing race conditions when tests run in parallel.
     """
     # Create a temporary file for the test database
-    temp_db_fd, temp_db_path = tempfile.mkstemp(suffix=".db")
-    temp_db_path_obj = Path(temp_db_path)
+    temp_db = tempfile.NamedTemporaryFile(mode='w', suffix=".db", delete=False)
+    temp_db_path = Path(temp_db.name)
+    temp_db.close()
     
     # Patch the DB_PATH in custodian_ledger module
-    with patch("custody.custodian_ledger.DB_PATH", temp_db_path_obj):
-        yield temp_db_path_obj
+    with patch("custody.custodian_ledger.DB_PATH", temp_db_path):
+        yield temp_db_path
     
-    # Cleanup: close file descriptor and remove temporary database
-    os.close(temp_db_fd)
-    if temp_db_path_obj.exists():
-        temp_db_path_obj.unlink()
+    # Cleanup: remove temporary database
+    if temp_db_path.exists():
+        temp_db_path.unlink()
