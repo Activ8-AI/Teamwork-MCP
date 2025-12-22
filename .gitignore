@@ -46,3 +46,16 @@ teamwork.config.json
 .vs/
 
 *.tgz
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+.pytest_cache/
+
+# Test database
+custody/ledger.db

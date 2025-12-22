@@ -3,8 +3,9 @@ from custody.custodian_ledger import log_event, get_last_events
 
 
 def test_single_cycle():
-    before = len(get_last_events(100))
+    """Test that logging an autonomy loop event writes exactly one event to the ledger."""
     hb = generate_heartbeat()
     log_event("AUTONOMY_LOOP", hb)
-    after = len(get_last_events(100))
-    assert after == before + 1
+    events = get_last_events(100)
+    assert len(events) == 1
+    assert events[0]["event"] == "AUTONOMY_LOOP"

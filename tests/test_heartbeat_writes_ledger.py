@@ -3,8 +3,9 @@ from telemetry.emit_heartbeat import generate_heartbeat
 
 
 def test_heartbeat_write():
-    before = len(get_last_events(100))
+    """Test that logging a heartbeat event writes exactly one event to the ledger."""
     hb = generate_heartbeat()
     log_event("HEARTBEAT_EMIT", hb)
-    after = len(get_last_events(100))
-    assert after == before + 1
+    events = get_last_events(100)
+    assert len(events) == 1
+    assert events[0]["event"] == "HEARTBEAT_EMIT"
