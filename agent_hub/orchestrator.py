@@ -1,5 +1,7 @@
+from typing import Any
+
 class Orchestrator:
-    def __init__(self, ledger, relays):
+    def __init__(self, ledger: Any, relays: Any):
         self.ledger = ledger
         self.relays = relays
 
