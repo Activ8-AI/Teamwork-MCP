@@ -46,3 +46,12 @@ teamwork.config.json
 .vs/
 
 *.tgz
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+*.db

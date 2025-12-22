@@ -1,6 +1,6 @@
 import json
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -29,7 +29,7 @@ def log_event(event_type: str, payload: Optional[Dict[str, Any]] = None) -> None
         _ensure_table(conn)
         conn.execute(
             "INSERT INTO ledger (timestamp, event_type, payload) VALUES (?, ?, ?)",
-            (datetime.utcnow().isoformat(), event_type, serialized_payload),
+            (datetime.now(timezone.utc).isoformat(), event_type, serialized_payload),
         )
         conn.commit()
 
