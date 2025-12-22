@@ -13,8 +13,11 @@ def isolated_ledger_db(monkeypatch) -> Generator[Path, None, None]:
     This fixture creates a temporary database file for each test,
     preventing race conditions from shared state between tests.
     """
-    with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as tmp_file:
-        tmp_db_path = Path(tmp_file.name)
+    # Create a temporary file and close it immediately so SQLite can use it
+    fd, tmp_path = tempfile.mkstemp(suffix=".db")
+    import os
+    os.close(fd)  # Close the file descriptor immediately
+    tmp_db_path = Path(tmp_path)
     
     # Monkey-patch the DB_PATH in the custodian_ledger module
     import custody.custodian_ledger
@@ -22,8 +25,5 @@ def isolated_ledger_db(monkeypatch) -> Generator[Path, None, None]:
     
     yield tmp_db_path
     
-    # Cleanup: close any open connections and remove the temp file
-    try:
-        tmp_db_path.unlink()
-    except Exception:
-        pass  # File might already be deleted
+    # Cleanup: remove the temp file
+    tmp_db_path.unlink(missing_ok=True)
