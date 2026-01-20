@@ -117,4 +117,4 @@ export default {
   // Conversations
   ingestEvent,
   synthesizeThread
-};  
+};
