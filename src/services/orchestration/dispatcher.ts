@@ -16,7 +16,8 @@ function parseLine(line: string): HandoffEvent | null {
 
 async function dispatch(event: HandoffEvent): Promise<void> {
 	for (const target of event.targets || []) {
-    switch ((target.name || '').toLowerCase()) {
+    const normalizedTargetName = (target.name || '').toLowerCase();
+    switch (normalizedTargetName) {
 			case 'notionrelay':
 				await dispatchToNotionRelay(event);
 				break;
