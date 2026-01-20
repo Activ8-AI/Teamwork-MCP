@@ -103,10 +103,10 @@ const toolPairs: ToolPair[] = [
   { definition: getProjectPerson, handler: handleGetProjectPerson },
   { definition: getProjectsReportingUserTaskCompletion, handler: handleGetProjectsReportingUserTaskCompletion },
   { definition: getProjectsReportingUtilization, handler: handleGetProjectsReportingUtilization },
-  { definition: getTimezones, handler: handleGetTimezones }
-  ,{ definition: enqueueHandoff, handler: handleEnqueueHandoff }
-  ,{ definition: ingestConversationEvent, handler: handleIngestConversationEvent }
-  ,{ definition: synthesizeConversationThread, handler: handleSynthesizeConversationThread }
+  { definition: getTimezones, handler: handleGetTimezones },
+  { definition: enqueueHandoff, handler: handleEnqueueHandoff },
+  { definition: ingestConversationEvent, handler: handleIngestConversationEvent },
+  { definition: synthesizeConversationThread, handler: handleSynthesizeConversationThread }
 ];
 
 // Extract just the definitions for the toolDefinitions array
