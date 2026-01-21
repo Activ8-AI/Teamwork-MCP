@@ -120,7 +120,7 @@ classify_repo() {
     risk="YELLOW"
   fi
 
-  if (cd "$repo_dir" && git ls-files | rg -i -q "$RED_REGEX"); then
+  if (cd "$repo_dir" && git ls-files | grep -E -i -q "$RED_REGEX"); then
     risk="RED"
   fi
 
@@ -212,7 +212,7 @@ IGN
   git config user.email >/dev/null 2>&1 || git config user.email "codex@activ8ai.app"
 
   # Append ignore block only if missing marker line
-  if ! rg -q "Charter Standard: Never commit secrets/caches/artifacts" .gitignore 2>/dev/null; then
+  if ! grep -q "Charter Standard: Never commit secrets/caches/artifacts" .gitignore 2>/dev/null; then
     printf "\n%s\n" "$ignore_block" >> .gitignore
   fi
 
@@ -244,7 +244,6 @@ main() {
   require_cmd jq
   require_cmd git
   require_cmd git-filter-repo
-  require_cmd rg
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
