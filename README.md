@@ -52,7 +52,7 @@ All high-risk operations are:
 
 ## Prerequisites
 
-- Node.js (v14.17 or higher, recommend 18+ or even better latest LTS version)
+- Node.js 20.x (LTS) - Required for all environments (CI, Docker, local development)
 - npm or yarn
 - Teamwork account with API access
 
