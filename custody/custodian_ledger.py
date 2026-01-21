@@ -88,7 +88,7 @@ class CustodianLedger:
     def recent(self, limit: int = 20) -> List[LedgerEntry]:
         raw = get_last_events(limit)
         return [
-            LedgerEntry(timestamp=e["timestamp"], event_type=e["event"], payload=e["payload"])
+            LedgerEntry(timestamp=e["timestamp"], event_type=e["event_type"], payload=e["payload"])
             for e in raw
         ]
 
