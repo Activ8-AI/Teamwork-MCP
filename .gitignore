@@ -50,8 +50,14 @@ teamwork.config.json
 # Python
 __pycache__/
 *.py[cod]
+*$py.class
 *.so
+.Python
 *.egg
 *.egg-info/
 dist/
+.pytest_cache/
 *.db
+
+# Test databases
+custody/*.db
