@@ -107,7 +107,7 @@ run_cmd() {
   else
     log "RUN" "$cmd"
     emit_event "$repo" "run_cmd" "$cmd"
-    bash -lc "$cmd"
+    bash -c "$cmd"
   fi
 }
 
