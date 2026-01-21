@@ -6,8 +6,9 @@ from pathlib import Path
 
 
 def main() -> None:
-    """Write a stub `.secrets.cache.json` file for local development."""
-    secrets_path = Path(".secrets.cache.json")
+    """Write a stub secrets cache file for local development."""
+    secrets_path = Path("configs/notion_secrets.json")
+    secrets_path.parent.mkdir(parents=True, exist_ok=True)
     secrets_payload = {
         "source": "notion",
         "status": "stubbed",
