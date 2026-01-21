@@ -11,6 +11,14 @@ yarn-error.log
 .env.test.local
 .env.production.local
 
+# Secrets and credentials
+.secrets.cache.json
+configs/notion_secrets.json
+*.pem
+*.key
+*.p12
+*.pfx
+
 # Logs
 logs/
 *.log
