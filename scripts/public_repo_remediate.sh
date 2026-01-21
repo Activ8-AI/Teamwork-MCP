@@ -130,7 +130,7 @@ classify_repo() {
 disable_actions() {
   local repo="$1"
   # GitHub REST: PUT /repos/{owner}/{repo}/actions/permissions { "enabled": false }
-  run_cmd "$repo" "gh api -X PUT repos/$ORG/$repo/actions/permissions -f enabled=false >/dev/null"
+  run_cmd "$repo" "gh api -X PUT repos/$ORG/$repo/actions/permissions -F enabled=false >/dev/null"
 }
 
 make_private() {
