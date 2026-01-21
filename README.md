@@ -1,6 +1,9 @@
 # Teamwork MCP
 
 [![npm version](https://img.shields.io/npm/v/@vizioz/teamwork-mcp.svg)](https://www.npmjs.com/package/@vizioz/teamwork-mcp)
+[![CI](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/ci.yml/badge.svg)](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/ci.yml)
+[![Connection Test](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/connection-test.yml/badge.svg)](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/connection-test.yml)
+[![Publish Docker Image](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/publish-image.yml/badge.svg)](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/publish-image.yml)
 
 An MCP server that connects to the Teamwork API, providing a simplified interface for interacting with Teamwork projects and tasks.
 
