@@ -52,6 +52,7 @@ All high-risk operations are:
 - RESTful API endpoints
 - Error handling and logging
 - MCP server for integration with Cursor and other applications
+- Competitive Intelligence Engine (v1) for external competitor surveillance with Reflex + Teamwork routing (see `docs/competitive-intelligence-engine.md`)
 
 ## Prerequisites
 
@@ -119,6 +120,10 @@ The following tools are available through the MCP server:
 - `getTime` - Get all time entries
 - `getProjectsAllocationsTime` - Get project allocations time
 - `getTimezones` - Get all available timezones in Teamwork (useful when updating user timezones)
+
+### Intelligence Tools
+
+- `ingestCompetitorDelta` - Record a competitor delta, generate a charter brief, trigger Reflex handoffs, and emit Teamwork tasks according to the Competitor Definition Map
 
 ## Installation
 

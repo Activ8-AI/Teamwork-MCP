@@ -1,0 +1,194 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2025-11-24T00:00:00Z",
+  "sourceSystems": {
+    "notion": "notion://client-portal/competitor-matrix",
+    "codex": "codex://maos/intelligence/competitors",
+    "crm": "salesforce://activ8/client-matrix",
+    "evidenceBinder": "vault://competitor-intelligence"
+  },
+  "clients": [
+    {
+      "clientId": "atlas-search",
+      "clientName": "Atlas Search Labs",
+      "industry": "Enterprise AI Search",
+      "tier": "tier1",
+      "portalSlug": "atlas",
+      "teamworkTasklistId": "980001",
+      "reflexChannel": "atlas_competitor_delta",
+      "notionPageId": "59e35241-2598-4d79-97c6-1c33c8428d44",
+      "guardian": "PrimeAgent",
+      "riskOwner": "PCA",
+      "dataSources": {
+        "clientMatrix": "notion://clients/atlas-search",
+        "onboarding": "notion://onboarding/intelligence-pack",
+        "crm": "salesforce://accounts/atlas-search",
+        "briefs": "codex://briefs/atlas"
+      },
+      "alerts": [
+        { "type": "pricing", "threshold": ">=10% price drop vs client", "severity": "red" },
+        { "type": "campaign", "threshold": "competitor targets branded keywords", "severity": "yellow" },
+        { "type": "product", "threshold": "feature parity on AI copilots", "severity": "red" }
+      ],
+      "portalViews": [
+        {
+          "tab": "Competitor Intelligence",
+          "description": "Live delta feed with Reflex statuses.",
+          "widgets": ["deltaFeed", "riskMeter", "taskProgress"]
+        },
+        {
+          "tab": "Industry Radar",
+          "description": "Macro category and market share tracker.",
+          "widgets": ["heatmap", "pricingBand", "sentimentTrend"]
+        },
+        {
+          "tab": "Trend Watch",
+          "description": "Emergent signals scored by confidence.",
+          "widgets": ["signalStack", "confidenceLeaderboard"]
+        }
+      ],
+      "competitors": [
+        {
+          "id": "vectorwave",
+          "name": "VectorWave",
+          "segment": "Search Infrastructure",
+          "watchlist": [
+            { "type": "website", "url": "https://vectorwave.io", "cadence": "daily" },
+            { "type": "pricing", "url": "https://vectorwave.io/pricing", "cadence": "daily" },
+            { "type": "blog", "url": "https://vectorwave.io/blog", "cadence": "daily" },
+            { "type": "adLibrary", "url": "https://www.facebook.com/ads/library/?id=vectorwave", "cadence": "weekly" },
+            { "type": "seo", "url": "serp://vectorwave core keywords", "cadence": "weekly" },
+            { "type": "ppc", "url": "ppc://vectorwave keyword set", "cadence": "daily" }
+          ],
+          "watcherAgents": [
+            {
+              "agent": "surveillance_agent",
+              "responsibilities": ["Check homepage hero, nav changes, CTA shifts"],
+              "triggers": ["Hero change", "New announcement banner"],
+              "outputs": ["diffSummary", "riskFlag"]
+            },
+            {
+              "agent": "web_crawler_agent",
+              "responsibilities": ["DOM diff, sitemap change detection"],
+              "triggers": ["Sitemap delta", "Price page DOM diff"],
+              "outputs": ["contentDiff", "sitemapDelta"]
+            },
+            {
+              "agent": "content_diff_agent",
+              "responsibilities": ["Compare release notes vs client roadmap"],
+              "triggers": ["Release note published"],
+              "outputs": ["featureGapAnalysis"]
+            },
+            {
+              "agent": "competitor_watch_agent",
+              "responsibilities": ["Aggregate SEO/PPC and ad-library data."],
+              "triggers": ["Keyword overlap > 40%", "New ad set"],
+              "outputs": ["campaignAlert", "budgetEstimate"]
+            },
+            {
+              "agent": "research_agent",
+              "responsibilities": ["Enrich with funding, hires, sentiment."],
+              "triggers": ["Press release", "LinkedIn hire spike"],
+              "outputs": ["contextPack"]
+            },
+            {
+              "agent": "signal_harvester_agent",
+              "responsibilities": ["Score combined signals and send to Reflex."],
+              "triggers": ["Delta severity >= medium"],
+              "outputs": ["reflexPacket"]
+            }
+          ],
+          "keywords": ["enterprise search", "vector search", "AI copilots"],
+          "notes": "Primary Tier 1 competitor"
+        },
+        {
+          "id": "northstar-analytics",
+          "name": "Northstar Analytics",
+          "segment": "Analytics & Insights",
+          "watchlist": [
+            { "type": "website", "url": "https://northstaranalytics.com", "cadence": "daily" },
+            { "type": "pricing", "url": "https://northstaranalytics.com/pricing", "cadence": "weekly" },
+            { "type": "social", "url": "https://twitter.com/northstar", "cadence": "hourly" }
+          ],
+          "watcherAgents": [
+            { "agent": "surveillance_agent", "responsibilities": ["Landing page shifts"], "outputs": ["summary"] },
+            { "agent": "competitor_watch_agent", "responsibilities": ["SEO overlap scoring"], "outputs": ["seoDelta"] },
+            { "agent": "signal_harvester_agent", "responsibilities": ["Confidence scoring"], "outputs": ["confidenceScore"] }
+          ],
+          "keywords": ["analytics", "dashboards", "BI"]
+        }
+      ]
+    },
+    {
+      "clientId": "orbit-payments",
+      "clientName": "Orbit Payments",
+      "industry": "Fintech / Payments",
+      "tier": "tier2",
+      "portalSlug": "orbit",
+      "teamworkTasklistId": "980145",
+      "reflexChannel": "orbit_competitor_delta",
+      "notionPageId": "0bd9483d-7de4-4662-87d9-2fac382ad907",
+      "guardian": "ClaudeAgent",
+      "riskOwner": "Ops-AUX",
+      "dataSources": {
+        "clientMatrix": "notion://clients/orbit",
+        "onboarding": "notion://onboarding/orbit",
+        "crm": "hubspot://companies/orbit",
+        "briefs": "codex://briefs/orbit"
+      },
+      "alerts": [
+        { "type": "pricing", "threshold": "fee change >= 25 bps", "severity": "yellow" },
+        { "type": "campaign", "threshold": "Competitor targeting SMB > $5M GMV", "severity": "yellow" },
+        { "type": "regulatory", "threshold": "Compliance warning", "severity": "red" }
+      ],
+      "portalViews": [
+        {
+          "tab": "Risk Levels",
+          "description": "Heatmap tying external threats to KA revenue.",
+          "widgets": ["riskGrid", "revenueImpactGauge"]
+        },
+        {
+          "tab": "Action Recommendations",
+          "description": "Reflex-sourced actions mapped to Teamwork status.",
+          "widgets": ["taskList", "heartbeat"]
+        }
+      ],
+      "competitors": [
+        {
+          "id": "pulsepay",
+          "name": "PulsePay",
+          "segment": "Payments Infra",
+          "watchlist": [
+            { "type": "website", "url": "https://pulsepay.com", "cadence": "daily" },
+            { "type": "pricing", "url": "https://pulsepay.com/pricing", "cadence": "hourly" },
+            { "type": "press", "url": "news://pulsepay", "cadence": "daily" },
+            { "type": "social", "url": "https://linkedin.com/company/pulsepay", "cadence": "daily" }
+          ],
+          "watcherAgents": [
+            { "agent": "web_crawler_agent", "responsibilities": ["Pricing diff snapshots"], "outputs": ["pricingDelta"] },
+            { "agent": "content_diff_agent", "responsibilities": ["Terms of service + policy changes"], "outputs": ["policyDelta"] },
+            { "agent": "research_agent", "responsibilities": ["Press + regulatory context"], "outputs": ["regWatch"] },
+            { "agent": "signal_harvester_agent", "responsibilities": ["Combine PPC + pricing + sentiment"], "outputs": ["reflexPacket"] }
+          ],
+          "keywords": ["payments", "merchant services", "billing APIs"]
+        },
+        {
+          "id": "swiftstack",
+          "name": "SwiftStack Commerce",
+          "segment": "SMB Commerce",
+          "watchlist": [
+            { "type": "website", "url": "https://swiftstack.io", "cadence": "daily" },
+            { "type": "ppc", "url": "ppc://swiftstack keyword overlap", "cadence": "daily" },
+            { "type": "adLibrary", "url": "https://www.facebook.com/ads/library/?id=swiftstack", "cadence": "weekly" }
+          ],
+          "watcherAgents": [
+            { "agent": "surveillance_agent", "responsibilities": ["Landing page & CTA"], "outputs": ["summary"] },
+            { "agent": "competitor_watch_agent", "responsibilities": ["Ad library pulls"], "outputs": ["adAlert"] },
+            { "agent": "signal_harvester_agent", "responsibilities": ["Severity + routing"], "outputs": ["reflexPacket"] }
+          ],
+          "keywords": ["commerce", "checkout", "growth marketing"]
+        }
+      ]
+    }
+  ]
+}
