@@ -11,6 +11,15 @@ yarn-error.log
 .env.test.local
 .env.production.local
 
+# ---- Charter Standard: Never commit secrets/caches/artifacts ----
+.secrets.cache.json
+.secrets*.json
+configs/notion_secrets.json
+
+# Logs / transcripts
+*.jsonl
+*transcript*
+
 # Logs
 logs/
 *.log
