@@ -18,7 +18,7 @@ class RelayServer:
         try:
             return self.handlers[command](payload or {})
         except Exception as e:
-            return {"status": "error", "command": command, "error": str(e)}
+            return {"status": "error", "command": command, "error": "An internal error occurred."}
 
 
 __all__ = ["RelayServer"]
