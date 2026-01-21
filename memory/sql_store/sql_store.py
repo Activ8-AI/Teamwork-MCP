@@ -14,7 +14,7 @@ class SqlStore:
         self._conn = sqlite3.connect(DB_PATH)
         self._ensure_table()
 
-    def __del__(self) -> None:
+    def close(self) -> None:
         if hasattr(self, "_conn") and self._conn:
             self._conn.close()
 
