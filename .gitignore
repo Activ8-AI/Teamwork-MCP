@@ -15,6 +15,14 @@ yarn-error.log
 .secrets.cache.json
 configs/notion_secrets.json
 configs/notion_secrets.*.json
+# ---- Charter Standard: Never commit secrets/caches/artifacts ----
+.secrets.cache.json
+.secrets*.json
+configs/notion_secrets.json
+
+# Logs / transcripts
+*.jsonl
+*transcript*
 
 # Logs
 logs/
