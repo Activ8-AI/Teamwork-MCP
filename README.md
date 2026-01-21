@@ -1,6 +1,10 @@
 # Teamwork MCP
 
 [![npm version](https://img.shields.io/npm/v/@vizioz/teamwork-mcp.svg)](https://www.npmjs.com/package/@vizioz/teamwork-mcp)
+[![CI](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/ci.yml/badge.svg)](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/ci.yml)
+[![Connection Test](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/connection-test.yml/badge.svg)](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/connection-test.yml)
+[![Publish](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/npm-publish.yml)
+[![Publish Image](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/publish-image.yml/badge.svg)](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/publish-image.yml)
 
 An MCP server that connects to the Teamwork API, providing a simplified interface for interacting with Teamwork projects and tasks.
 
@@ -52,7 +56,7 @@ All high-risk operations are:
 
 ## Prerequisites
 
-- Node.js (v14.17 or higher, recommend 18+ or even better latest LTS version)
+- Node.js (20.x LTS recommended)
 - npm or yarn
 - Teamwork account with API access
 
