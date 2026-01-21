@@ -45,7 +45,7 @@ PURGE_GLOBS=(
 )
 
 # Filenames that should mark repo as RED immediately.
-RED_REGEX='\.secrets|secrets|secret|token|apikey|api_key|private|\.pem$|\.p12$|credentials|service-account|sa\.json|cache|ledger|jsonl|transcript|webhook|hmac|__pycache__|\.pyc$'
+RED_REGEX='\.secrets|secrets|secret|token|apikey|api_key|private|\.pem$|\.p12$|credentials|service-account|sa\.json|\.secrets?\.cache|ledger|jsonl|transcript|webhook|hmac|__pycache__|\.pyc$'
 
 usage() {
   cat <<USAGE
