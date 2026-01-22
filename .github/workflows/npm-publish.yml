@@ -9,7 +9,8 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -18,8 +19,8 @@ jobs:
           registry-url: 'https://registry.npmjs.org/'
       - run: npm ci
       - run: npm run build
+      - run: npm audit --audit-level=high
       - run: npm test
-        if: ${{ false }}  # Skip tests for now, add them later when available
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} 

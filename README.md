@@ -165,6 +165,11 @@ You can provide your Teamwork credentials in three ways:
    npx @vizioz/teamwork-mcp --domain=your-company --user=your-email@example.com --pass=your-password
    ```
 
+### Secrets Governance (Charter Standard)
+
+- **Never commit secrets** to git. Store them in the **Notion Secrets Registry** or **GitHub Secrets** and inject at runtime.
+- Local development may use `.env`, but it must remain untracked (see `.gitignore`).
+
 ### Logging Configuration
 
 By default, the Teamwork MCP server creates log files in a `logs` directory to help with debugging and monitoring. You can disable logging completely using the following methods:
