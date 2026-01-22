@@ -168,8 +168,8 @@ Failure of any gate requires patching on the same branch and re-running checks.
 
 #### 8) Status
 
-PR State: ⏳ CREATED / IN REVIEW  
-System State: 🟡 EXECUTING (CI gates active)  
+PR State: PENDING / IN REVIEW  
+System State: EXECUTING (CI gates active)
 
 This entry remains open until merge completion.
 
