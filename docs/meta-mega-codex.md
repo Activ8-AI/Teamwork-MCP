@@ -77,7 +77,7 @@ Entry ID: MMC-PR-TEAMWORK-MCP-20260122
 Timestamp (CT): 2026-01-22 (America/Chicago)  
 Classification: TIER 3 — Full Governance Controls  
 Charter: Activ8 AI Operational Execution & Accountability Charter (AIOEAC v1.3)  
-Phase: PR Created → CI Review → Pending Merge  
+Phase: PR Created -> CI Review -> Pending Merge
 Scope: Internal / Canonical (execution tracking)  
 
 ---
