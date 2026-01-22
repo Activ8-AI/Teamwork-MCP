@@ -33,8 +33,34 @@ PY
   fi
 }
 
+pid_active() {
+  local pid_file="$1"
+  if [[ -f "$pid_file" ]]; then
+    local pid
+    pid="$(cat "$pid_file" 2>/dev/null || true)"
+    if [[ -n "$pid" ]] && kill -0 "$pid" >/dev/null 2>&1; then
+      return 0
+    fi
+    rm -f "$pid_file"
+  fi
+  return 1
+}
+
+ensure_services_available() {
+  local conflict=0
+  for pid_file in "$@"; do
+    if pid_active "$pid_file"; then
+      echo "Service already running (see ${pid_file}). Run ./META_MEGA_CODEX.sh down first." >&2
+      conflict=1
+    fi
+  done
+  if [[ "$conflict" -eq 1 ]]; then
+    exit 1
+  fi
+}
+
 bootstrap_files() {
-  mkdir -p configs custody memory/sql_store memory/vector_store telemetry orchestration/MCP scripts agent_hub governance relay autonomy qa workflow utils compliance seals export
+  mkdir -p configs custody memory/sql_store memory/vector_store telemetry orchestration/MCP scripts agent_hub governance relay autonomy qa workflow utils compliance seals export migration
   touch .codex_lock
 
   # Config — Environment
@@ -128,6 +154,8 @@ EOF
   cat > governance/drift_scoring.py <<'EOF'
 import os, random
 
+random.seed(42)
+
 def calculate_drift():
     # If DRIFT_FIXED is set, use deterministic drift; otherwise bounded random.
     fixed = os.environ.get("DRIFT_FIXED")
@@ -137,7 +165,6 @@ def calculate_drift():
         except ValueError:
             drift = 5
     else:
-        random.seed(42)  # zero drift seed for reproducibility
         drift = random.randint(0, 15)
     status = "green" if drift < 10 else "red"
     return {"drift": drift, "status": status}
@@ -523,6 +550,7 @@ EOF
 cmd_up() {
   ensure_python
   ensure_deps
+  ensure_services_available .pid_relay .pid_telemetry .pid_autonomy
   "$PYTHON_BIN" orchestration/MCP/relay_server.py & echo $! > .pid_relay
   "$PYTHON_BIN" telemetry/telemetry_engine.py & echo $! > .pid_telemetry
   "$PYTHON_BIN" autonomy/start_autonomy_loop.py & echo $! > .pid_autonomy
@@ -541,10 +569,76 @@ cmd_down() {
 
 cmd_seal() {
   "$PYTHON_BIN" - <<'EOF'
-import uuid, datetime, pathlib
+import uuid, datetime, pathlib, os, sys, sqlite3
+
+ROOT = pathlib.Path(".").resolve()
+sys.path.insert(0, str(ROOT))
 pathlib.Path("seals").mkdir(exist_ok=True)
-cid=str(uuid.uuid4())
-content=f"""# MAOS Seal Document
+
+try:
+    import requests
+except ImportError:  # requests not installed yet
+    requests = None
+
+try:
+    from governance.drift_scoring import calculate_drift
+except Exception:
+    calculate_drift = None
+
+def pid_alive(pid_path: pathlib.Path) -> bool:
+    try:
+        pid = int(pid_path.read_text().strip())
+        os.kill(pid, 0)
+        return True
+    except (FileNotFoundError, ProcessLookupError, ValueError, PermissionError):
+        return False
+
+def check_mcp_online() -> bool:
+    if requests is None:
+        return False
+    try:
+        resp = requests.get("http://127.0.0.1:8000/health", timeout=2)
+        return resp.status_code == 200
+    except Exception:
+        return False
+
+def check_memory_pack() -> bool:
+    return (ROOT / "memory/sql_store").exists() and (ROOT / "memory/vector_store").exists()
+
+def check_drift() -> bool:
+    if calculate_drift is None:
+        return False
+    try:
+        drift = calculate_drift()
+        return drift.get("drift", 999) < 10
+    except Exception:
+        return False
+
+def check_ledger() -> bool:
+    try:
+        conn = sqlite3.connect(str(ROOT / "custody/ledger.db"))
+        conn.execute("SELECT 1")
+        conn.close()
+        return True
+    except Exception:
+        return False
+
+checks = {
+    "MCP online": check_mcp_online(),
+    "Memory Pack online": check_memory_pack(),
+    "Telemetry live": pid_alive(ROOT / ".pid_telemetry"),
+    "Agents active": pid_alive(ROOT / ".pid_relay"),
+    "Autonomy running": pid_alive(ROOT / ".pid_autonomy"),
+    "Drift < 10": check_drift(),
+    "Governance enforced": (ROOT / ".codex_lock").exists(),
+    "Ledger healthy": check_ledger(),
+}
+
+cid = str(uuid.uuid4())
+overall_valid = all(checks.values())
+conditions = "\n".join(f"- {name} {'✅' if ok else '❌'}" for name, ok in checks.items())
+status = "VALID" if overall_valid else "INVALID"
+content = f"""# MAOS Seal Document
 
 **Seal Version:** MVP_v1
 **Date:** {datetime.date.today().isoformat()}
@@ -552,20 +646,16 @@ content=f"""# MAOS Seal Document
 **Correlation ID:** {cid}
 
 ## Conditions
-- MCP online ✅
-- Memory Pack online ✅
-- Telemetry live ✅
-- Agents active ✅
-- Autonomy running ✅
-- Drift < 10 ✅
-- Governance enforced ✅
-- Ledger healthy ✅
+{conditions}
 
-**Seal Status:** VALID
+**Seal Status:** {status}
 **Signed By:** Custodian
 """
-open("seals/SEAL_CURRENT.md","w").write(content)
+
+(ROOT / "seals/SEAL_CURRENT.md").write_text(content)
 print("Sealed with Correlation ID:", cid)
+if not overall_valid:
+    print("Warning: Seal marked INVALID — review conditions.")
 EOF
 }
 
@@ -613,9 +703,9 @@ EOF
 
 cmd_checksum() {
   if command -v shasum >/dev/null 2>&1; then
-    shasum -a 256 META_MEGA_CODEX.sh || true
+    shasum -a 256 "$0" || true
   elif command -v sha256sum >/dev/null 2>&1; then
-    sha256sum META_MEGA_CODEX.sh || true
+    sha256sum "$0" || true
   else
     echo "SHA256 tool not found."
   fi
