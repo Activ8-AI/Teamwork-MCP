@@ -111,7 +111,7 @@ Intent:
 
 Explicitly In Scope:
 
-- Security fixes (npm audit → 0)
+- Security fixes (npm audit -> 0)
 - Test isolation and race-condition remediation
 - MCP SDK update to 1.25.3
 - CI workflow cleanup and Node.js 20.x standardization
