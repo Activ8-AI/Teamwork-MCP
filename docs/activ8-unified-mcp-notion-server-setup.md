@@ -33,7 +33,7 @@ npm install
 Build:
 
 ```bash
-pnpm build
+npm run build
 ```
 
 Run:
