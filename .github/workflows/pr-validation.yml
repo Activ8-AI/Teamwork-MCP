@@ -1,0 +1,126 @@
+name: PR Validation
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate PR title
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+
+          # Check for conventional commit format
+          if [[ ! "$PR_TITLE" =~ ^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|security)(\(.+\))?: ]]; then
+            echo "::error::PR title must follow conventional commits format: type(scope): description"
+            echo "Valid types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, security"
+            exit 1
+          fi
+
+          echo "✅ PR title follows conventional commits"
+
+      - name: Check PR description
+        run: |
+          PR_BODY="${{ github.event.pull_request.body }}"
+
+          if [ -z "$PR_BODY" ] || [ ${#PR_BODY} -lt 20 ]; then
+            echo "::warning::PR description is too short. Please provide detailed context."
+          fi
+
+          # Check for required sections
+          MISSING=()
+          echo "$PR_BODY" | grep -q "## Summary" || MISSING+=("Summary")
+          echo "$PR_BODY" | grep -q "## Changes" || echo "$PR_BODY" | grep -q "## Testing" || MISSING+=("Changes/Testing")
+
+          if [ ${#MISSING[@]} -gt 0 ]; then
+            echo "::warning::PR description missing sections: ${MISSING[*]}"
+          else
+            echo "✅ PR description complete"
+          fi
+
+      - name: Auto-label based on files changed
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+
+            const labels = new Set();
+            const filePatterns = {
+              'security': ['.gitignore', 'security', 'secret', '.env'],
+              'dependencies': ['package.json', 'package-lock.json'],
+              'ci/cd': ['.github/workflows'],
+              'documentation': ['README.md', 'docs/', '.md'],
+              'tests': ['test', 'spec', 'conftest'],
+              'infrastructure': ['Dockerfile', 'docker-compose', '.yml'],
+              'typescript': ['.ts'],
+              'python': ['.py']
+            };
+
+            files.forEach(file => {
+              Object.entries(filePatterns).forEach(([label, patterns]) => {
+                if (patterns.some(pattern => file.filename.includes(pattern))) {
+                  labels.add(label);
+                }
+              });
+            });
+
+            // Add size label
+            const additions = files.reduce((sum, f) => sum + f.additions, 0);
+            if (additions < 10) labels.add('size/xs');
+            else if (additions < 100) labels.add('size/s');
+            else if (additions < 500) labels.add('size/m');
+            else if (additions < 1000) labels.add('size/l');
+            else labels.add('size/xl');
+
+            // Apply labels
+            if (labels.size > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: Array.from(labels)
+              });
+            }
+
+      - name: Check for breaking changes
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr_body = context.payload.pull_request.body || '';
+            const pr_title = context.payload.pull_request.title || '';
+
+            if (pr_body.includes('BREAKING CHANGE') || pr_title.includes('!:')) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: ['breaking-change']
+              });
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: '⚠️ **Breaking Change Detected**\n\nThis PR contains breaking changes. Please ensure:\n- [ ] Migration guide is included\n- [ ] Major version bump is planned\n- [ ] Documentation is updated'
+              });
+            }
+
+      - name: Size check
+        run: |
+          FILES_CHANGED=$(gh pr view ${{ github.event.pull_request.number }} --json files -q '.files | length')
+
+          if [ $FILES_CHANGED -gt 50 ]; then
+            echo "::warning::This PR changes $FILES_CHANGED files. Consider breaking it into smaller PRs."
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

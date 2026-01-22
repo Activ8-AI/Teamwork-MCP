@@ -1,0 +1,51 @@
+name: Auto-Close Superseded PRs
+
+on:
+  pull_request:
+    types: [opened, labeled]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number that supersedes others'
+        required: true
+      superseded_prs:
+        description: 'Comma-separated list of PR numbers to close (e.g., 16,17,19)'
+        required: true
+
+jobs:
+  close-superseded:
+    runs-on: ubuntu-latest
+    if: github.event.label.name == 'supersedes' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Parse superseded PRs from description
+        id: parse
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "superseded=${{ github.event.inputs.superseded_prs }}" >> $GITHUB_OUTPUT
+            echo "pr_number=${{ github.event.inputs.pr_number }}" >> $GITHUB_OUTPUT
+          else
+            # Parse from PR body: "Supersedes: #16, #17, #19" or "Closes #16"
+            PR_BODY=$(gh pr view ${{ github.event.pull_request.number }} --json body -q .body)
+            SUPERSEDED=$(echo "$PR_BODY" | grep -oE "(Supersedes|Closes):? #[0-9]+" | grep -oE "[0-9]+" | tr '\n' ',')
+            echo "superseded=$SUPERSEDED" >> $GITHUB_OUTPUT
+            echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Close superseded PRs
+        if: steps.parse.outputs.superseded != ''
+        run: |
+          IFS=',' read -ra PRS <<< "${{ steps.parse.outputs.superseded }}"
+          for pr in "${PRS[@]}"; do
+            if [ -n "$pr" ]; then
+              echo "Closing PR #$pr as superseded by #${{ steps.parse.outputs.pr_number }}"
+              gh pr close "$pr" --comment "This PR has been superseded by #${{ steps.parse.outputs.pr_number }} which includes this work plus additional enhancements. Thank you for the contribution!" || echo "Failed to close PR #$pr"
+            fi
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

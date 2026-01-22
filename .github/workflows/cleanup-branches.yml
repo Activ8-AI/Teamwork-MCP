@@ -1,0 +1,81 @@
+name: Cleanup Merged Branches
+
+on:
+  pull_request:
+    types: [closed]
+  schedule:
+    # Run weekly on Sundays at 2 AM UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Delete merged PR branch
+        if: github.event_name == 'pull_request'
+        run: |
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+          if git show-ref --verify --quiet "refs/remotes/origin/$BRANCH"; then
+            echo "Deleting branch: $BRANCH"
+            git push origin --delete "$BRANCH" || echo "Failed to delete $BRANCH"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Cleanup stale branches (weekly)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          echo "🧹 Finding stale branches..."
+
+          # Get all merged branches
+          git fetch --all
+          MERGED_BRANCHES=$(git branch -r --merged origin/main | grep -v "HEAD\|main\|master" | sed 's/origin\///')
+
+          # Protect certain branch patterns
+          PROTECTED_PATTERNS=("dependabot" "production" "staging")
+
+          for branch in $MERGED_BRANCHES; do
+            SKIP=false
+
+            # Check if branch matches protected patterns
+            for pattern in "${PROTECTED_PATTERNS[@]}"; do
+              if [[ "$branch" == *"$pattern"* ]]; then
+                echo "⚠️  Skipping protected branch: $branch"
+                SKIP=true
+                break
+              fi
+            done
+
+            if [ "$SKIP" = false ]; then
+              # Check if branch is older than 30 days
+              LAST_COMMIT_DATE=$(git log -1 --format=%cd --date=unix "origin/$branch")
+              CURRENT_DATE=$(date +%s)
+              AGE_DAYS=$(( ($CURRENT_DATE - $LAST_COMMIT_DATE) / 86400 ))
+
+              if [ $AGE_DAYS -gt 30 ]; then
+                echo "🗑️  Deleting stale branch (${AGE_DAYS} days old): $branch"
+                git push origin --delete "$branch" || echo "Failed to delete $branch"
+              else
+                echo "✅ Keeping recent branch (${AGE_DAYS} days old): $branch"
+              fi
+            fi
+          done
+
+      - name: Summary report
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          echo "## Branch Cleanup Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Date:** $(date -u)" >> $GITHUB_STEP_SUMMARY
+          echo "**Remaining branches:** $(git branch -r | wc -l)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Active Branches" >> $GITHUB_STEP_SUMMARY
+          git branch -r --sort=-committerdate | head -20 | sed 's/origin\///' >> $GITHUB_STEP_SUMMARY
