@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 
 class VectorStore:
@@ -13,11 +13,11 @@ class VectorStore:
     def upsert(self, key: str, vector: List[float]) -> None:
         self._vectors[key] = vector
 
-    def get(self, key: str) -> List[float] | None:
+    def get(self, key: str) -> Optional[List[float]]:
         return self._vectors.get(key)
 
     def dump(self, path: Path) -> None:
-        path.write_text(str(self._vectors))
+        path.write_text(str(self._vectors), encoding="utf-8")
 
 
 __all__ = ["VectorStore"]
