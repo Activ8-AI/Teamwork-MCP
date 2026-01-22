@@ -97,6 +97,7 @@ This PR is a state-change event, not a new inflection point.
 - Compare Branch: claude/fix-resolve-merge-all-prs-KaBMl
 - PR Title: fix: Resolve and merge all open PRs with security fixes and features
 - PR URL: <PENDING — to be inserted once created>
+- Execution Note (Agent): PR creation attempted via GitHub CLI; blocked in this environment (`createPullRequest` not accessible). Insert PR URL once created by a maintainer with appropriate permissions.
 
 ---
 
