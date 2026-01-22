@@ -10,7 +10,7 @@ This doc captures the **build + configuration** workflow for bringing up the Not
 Clone the `Activ8-AI/mcp` monorepo and navigate to the unified MCP package:
 
 ```bash
-git clone git@github.com:Activ8-AI/mcp.git
+git clone https://github.com/Activ8-AI/mcp.git
 cd mcp/packages/activ8-unified-mcp
 ```
 
