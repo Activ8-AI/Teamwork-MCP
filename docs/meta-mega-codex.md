@@ -102,7 +102,7 @@ This PR is a state-change event, not a new inflection point.
 ---
 
 #### 3) Scope & Intent
-
+#### 3.1) Intent
 Intent:
 
 - Execute a previously sealed consolidation across multiple open PRs
