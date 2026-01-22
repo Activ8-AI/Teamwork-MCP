@@ -561,3 +561,6 @@ Multi‑Agent Orchestration
 - Enqueue handoff: tool `enqueueHandoff`
 - Dispatch queued events: `npm run orchestrator:dispatch` (routes to Notion Relay / Prime / Claude adapters)
 - Notion Relay webhooks: `npm run relay:serve` (endpoints: `/webhook/prime`, `/webhook/clawed`, `/webhook/ancillary`)
+
+> Note: This repo contains the **Teamwork MCP** plus a **Notion Relay webhook server**.  
+> The **Notion MCP server** (via `activ8-unified-mcp`) lives in the `Activ8-AI/mcp` monorepo; see [`docs/activ8-unified-mcp-notion-server-setup.md`](./docs/activ8-unified-mcp-notion-server-setup.md).
