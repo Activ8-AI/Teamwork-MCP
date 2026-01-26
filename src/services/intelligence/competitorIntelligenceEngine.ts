@@ -81,7 +81,7 @@ function buildBrief(record: CompetitorDeltaRecord): string {
     `- **Severity:** ${record.severity || 'medium'}`,
     `- **Confidence Score:** ${(record.confidence ?? 0.72).toFixed(2)}`,
     `- **Custodian Hash:** ${record.custodianHash}`,
-    `- **Watcher Agents:** ${record.watcherAgents.join(', ') || 'unassigned'}`,
+    `- **Watcher Agents:** ${record.watcherAgents.length > 0 ? record.watcherAgents.join(', ') : 'unassigned'}`,
     '',
     '## Summary',
     record.summary,
