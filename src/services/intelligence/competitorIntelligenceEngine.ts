@@ -157,11 +157,13 @@ async function routeToTeamwork(record: CompetitorDeltaRecord, tasklistId?: strin
   }
 }
 
-function persistRecord(record: CompetitorDeltaRecord, brief: string): void {
+async function persistRecord(record: CompetitorDeltaRecord, brief: string): Promise<void> {
   ensureFoundations();
-  fs.appendFileSync(DELTA_LOG, JSON.stringify(record) + '\n', { encoding: 'utf8' });
-  fs.writeFileSync(path.resolve(process.cwd(), record.briefPath), brief, { encoding: 'utf8' });
-  fs.appendFileSync(REFLEX_PIPELINE_FILE, JSON.stringify(record) + '\n', { encoding: 'utf8' });
+  await Promise.all([
+    fs.promises.appendFile(DELTA_LOG, JSON.stringify(record) + '\n', { encoding: 'utf8' }),
+    fs.promises.writeFile(path.resolve(process.cwd(), record.briefPath), brief, { encoding: 'utf8' }),
+    fs.promises.appendFile(REFLEX_PIPELINE_FILE, JSON.stringify(record) + '\n', { encoding: 'utf8' })
+  ]);
 }
 
 async function routeToHandoff(record: CompetitorDeltaRecord, channel?: string): Promise<void> {
