@@ -44,4 +44,5 @@ export interface CompetitorDeltaRecord extends CompetitorDeltaInput {
   watcherAgents: string[];
   briefPath: string;
   custodianHash: string;
+  warnings?: string[];
 }
