@@ -186,7 +186,7 @@ async function routeToHandoff(record: CompetitorDeltaRecord, channel?: string): 
           severity: record.severity,
         },
       },
-      priority: record.severity === 'critical' ? 'high' : 'normal',
+      priority: record.severity === 'critical' || record.severity === 'high' ? 'high' : 'normal',
     });
   } catch (error: any) {
     logger.error(`Failed to enqueue handoff for competitor delta ${record.id}: ${error.message}`);
