@@ -221,10 +221,19 @@ export async function ingestCompetitorDelta(delta: CompetitorDeltaInput): Promis
   const brief = buildBrief(record);
   persistRecord(record, brief);
 
-  await routeToTeamwork(record, client?.teamworkTasklistId);
-  await routeToHandoff(record, client?.reflexChannel);
+  const errors: string[] = [];
+  try {
+    await routeToTeamwork(record, client?.teamworkTasklistId);
+  } catch (error: any) {
+    errors.push(`Teamwork routing failed: ${error?.message ?? error}`);
+  }
+  try {
+    await routeToHandoff(record, client?.reflexChannel);
+  } catch (error: any) {
+    errors.push(`Handoff routing failed: ${error?.message ?? error}`);
+  }
 
-  return record;
+  return errors.length > 0 ? { ...record, warnings: errors } : record;
 }
 
 export default {
