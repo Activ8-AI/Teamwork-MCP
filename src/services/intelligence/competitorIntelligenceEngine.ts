@@ -215,7 +215,7 @@ export async function ingestCompetitorDelta(delta: CompetitorDeltaInput): Promis
     },
     custodianHash,
     confidence: normalizeConfidence(delta.confidence),
-    briefPath: path.join('competitor-intel', 'briefs', `${delta.clientId}-${timestamp.replace(/[:.]/g, '-')}.md`),
+    briefPath: path.join('competitor-intel', 'briefs', `${delta.clientId.replace(/[^a-zA-Z0-9_-]/g, '_')}-${timestamp.replace(/[:.]/g, '-')}.md`),
   };
 
   const brief = buildBrief(record);
