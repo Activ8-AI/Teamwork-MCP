@@ -1,24 +1,49 @@
 # Teamwork MCP
 
 [![npm version](https://img.shields.io/npm/v/@vizioz/teamwork-mcp.svg)](https://www.npmjs.com/package/@vizioz/teamwork-mcp)
+[![CI](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/ci.yml/badge.svg)](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/ci.yml)
+[![Connection Test](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/connection-test.yml/badge.svg)](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/connection-test.yml)
+[![Publish](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/npm-publish.yml)
+[![Publish Image](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/publish-image.yml/badge.svg)](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/publish-image.yml)
 
 An MCP server that connects to the Teamwork API, providing a simplified interface for interacting with Teamwork projects and tasks.
-Governance & Charter Standard
------------------------------
 
-This repository follows the Charter Standard and Academic Framework (McKinsey/Bain/BCG-inspired) for clarity, evidence-based decisions, and rigorous governance.
+## 🧭 MAOS v1 Governance
 
-- See `docs/charter-standard.md` for principles and delivery framework
-- See `docs/governance.md` for roles, decision records, CI, and security practices
-- See `docs/tao-multi-agent-codex.md` and `docs/orchestration.md` for multi‑agent orchestration
-- See `docs/conversation-review.md` for the Conversation Review standard
+This repository operates under MAOS v1 (Modular Automation Operating System) governance framework, which establishes:
 
-Operational Mode
-----------------
+- **Tier 3 Repository Classification**: Full governance controls with automated agent workflows
+- **Charter Compliance**: All changes must align with Charter Standards for security, modularity, and provider-agnostic design
+- **Fail-Closed Enforcement**: Required governance checks must pass before merge
+- **Human Authority**: All merges require explicit human approval
+- **Audit Trail**: Comprehensive logging and compliance tracking
 
-- Operating under the Compounding Intelligence System (CIS) in alignment with the Operational Execution & Accountability Charter: see `docs/operational-execution-charter.md`.
-- See `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, and `SECURITY.md` for collaboration and security policies
+For complete governance documentation, see:
+- [`docs/charter-standard.md`](./docs/charter-standard.md) - Charter principles and delivery framework
+- [`docs/governance.md`](./docs/governance.md) - Roles, decision records, CI, and security practices
+- [`docs/tao-multi-agent-codex.md`](./docs/tao-multi-agent-codex.md) - Multi-agent orchestration
+- [`docs/orchestration.md`](./docs/orchestration.md) - Orchestration patterns
+- [`docs/conversation-review.md`](./docs/conversation-review.md) - Conversation Review standard
+- [`docs/operational-execution-charter.md`](./docs/operational-execution-charter.md) - Operational Execution & Accountability
+- [`CONTRIBUTING.md`](./CONTRIBUTING.md) - Contribution guidelines and review process
+- [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) - Code of conduct
+- [`SECURITY.md`](./SECURITY.md) - Security policies and vulnerability reporting
 
+### High-Risk Powers
+
+This MCP server contains automation workflows with elevated privileges that require special governance:
+
+- **Teamwork API Integration**: Full read/write access to Teamwork projects, tasks, and company data
+- **Secret Management**: API credentials and authentication tokens
+- **Data Processing**: Project and task data with potential business-sensitive information
+- **Task Automation**: Automatic task creation, updates, and deletion capabilities
+- **Multi-Agent Orchestration**: Handoff queuing and relay webhook endpoints
+
+All high-risk operations are:
+- Gated behind required human approval
+- Logged for audit compliance
+- Subject to automated security scanning
+- Governed by principle of least privilege
 
 ## Features
 
@@ -28,10 +53,11 @@ Operational Mode
 - RESTful API endpoints
 - Error handling and logging
 - MCP server for integration with Cursor and other applications
+- Competitive Intelligence Engine (v1) for external competitor surveillance with Reflex + Teamwork routing (see `docs/competitive-intelligence-engine.md`)
 
 ## Prerequisites
 
-- Node.js (v14.17 or higher, recommend 18+ or even better latest LTS version)
+- Node.js (20.x LTS recommended)
 - npm or yarn
 - Teamwork account with API access
 
@@ -96,6 +122,10 @@ The following tools are available through the MCP server:
 - `getProjectsAllocationsTime` - Get project allocations time
 - `getTimezones` - Get all available timezones in Teamwork (useful when updating user timezones)
 
+### Intelligence Tools
+
+- `ingestCompetitorDelta` - Record a competitor delta, generate a charter brief, trigger Reflex handoffs, and emit Teamwork tasks according to the Competitor Definition Map
+
 ## Installation
 
 ### Using NPX (Recommended)
@@ -139,6 +169,11 @@ You can provide your Teamwork credentials in three ways:
    ```bash
    npx @vizioz/teamwork-mcp --domain=your-company --user=your-email@example.com --pass=your-password
    ```
+
+### Secrets Governance (Charter Standard)
+
+- **Never commit secrets** to git. Store them in the **Notion Secrets Registry** or **GitHub Secrets** and inject at runtime.
+- Local development may use `.env`, but it must remain untracked (see `.gitignore`).
 
 ### Logging Configuration
 
@@ -531,3 +566,6 @@ Multi‑Agent Orchestration
 - Enqueue handoff: tool `enqueueHandoff`
 - Dispatch queued events: `npm run orchestrator:dispatch` (routes to Notion Relay / Prime / Claude adapters)
 - Notion Relay webhooks: `npm run relay:serve` (endpoints: `/webhook/prime`, `/webhook/clawed`, `/webhook/ancillary`)
+
+> Note: This repo contains the **Teamwork MCP** plus a **Notion Relay webhook server**.  
+> The **Notion MCP server** (via `activ8-unified-mcp`) lives in the `Activ8-AI/mcp` monorepo; see [`docs/activ8-unified-mcp-notion-server-setup.md`](./docs/activ8-unified-mcp-notion-server-setup.md).

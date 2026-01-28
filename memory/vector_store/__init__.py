@@ -1,3 +1,3 @@
-from .vector_store import InMemoryVectorStore
+from .vector_store import VectorStore
 
-__all__ = ["InMemoryVectorStore"]
+__all__ = ["VectorStore"]

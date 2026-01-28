@@ -6,3 +6,10 @@ orchestration:
     - name: NotionRelay
     - name: SlackSignal
     - name: TeamworkSink
+mcp:
+  host: 0.0.0.0
+  port: 8000
+telemetry:
+  heartbeat_interval_seconds: 15
+autonomy:
+  loop_interval_seconds: 5

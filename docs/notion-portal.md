@@ -45,3 +45,16 @@ Server
 
 - Start local webhook server: `npm run relay:serve`
 - The server enqueues handoffs consumed by the dispatcher.
+
+Client Portal Intelligence Views
+--------------------------------
+
+The Client Portal now renders competitor intelligence tabs defined in `codex-portal/client-intelligence/competitor-definition-map.json`.
+
+- **Competitor Intelligence Tab**: live delta feed with Reflex status badges, linked briefs, and Teamwork task sync.
+- **Industry Radar Tab**: macro heatmap (pricing bands, sentiment trends, share-of-voice gauges).
+- **Trend Watch Tab**: ranked signal stack highlighting confidence scores and pending analysis.
+- **Risk Levels Tab**: red/yellow/green grid tying external threats to revenue segments.
+- **Action Recommendations Tab**: mirrors Teamwork tasks created by the Competitor Intelligence Engine, grouped by charter priority.
+
+Each tab can be bound to a Notion database view; use the `portalViews` array inside the Competitor Definition Map to align widget names to their Notion database IDs.
