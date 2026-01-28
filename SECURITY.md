@@ -15,3 +15,10 @@ Please report vulnerabilities privately:
 - Email a maintainer (see `CODEOWNERS` when available)
 
 Do not file public issues for sensitive vulnerabilities.
+
+Secrets and Credentials
+-----------------------
+
+- Do not commit secrets (tokens, API keys, passwords, certificates) to this repository.
+- Store secrets in the **Notion Secrets Registry** or **GitHub Secrets**, and inject them at runtime (CI/environment).
+- Local files such as `.env` and `.secrets.cache.json` must remain untracked.
