@@ -13,13 +13,15 @@ This repository follows a pragmatic governance model:
 
 ## CI/CD
 
-- On PR: install, typecheck, build
-- Future: lint, unit tests, security scanning
+- On PR: install, `npm audit --audit-level=high`, typecheck/build, targeted Node tests
+- Releases: the same gates run before publish workflows
+
+**Fail-closed principle**: if any required check fails (build, tests, audit), merges are blocked until remediated.
 
 ## Security
 
 - Vulnerability reports via SECURITY policy
-- No secrets in code; use repository/encrypted secrets
+- No secrets in code; use Notion Secrets Registry or GitHub Secrets (never commit local caches)
 
 ## Documentation
 

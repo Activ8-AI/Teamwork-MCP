@@ -11,6 +11,19 @@ yarn-error.log
 .env.test.local
 .env.production.local
 
+# Local secrets / caches (never commit)
+.secrets.cache.json
+configs/notion_secrets.json
+configs/notion_secrets.*.json
+# ---- Charter Standard: Never commit secrets/caches/artifacts ----
+.secrets.cache.json
+.secrets*.json
+configs/notion_secrets.json
+
+# Logs / transcripts
+*.jsonl
+*transcript*
+
 # Logs
 logs/
 *.log
@@ -53,3 +66,11 @@ __pycache__/
 *$py.class
 *.so
 .Python
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+*.db

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import sqlite3
 from pathlib import Path
 from typing import Optional
@@ -8,11 +10,11 @@ DB_PATH = Path(__file__).resolve().parent / "memory.db"
 class SqlStore:
     """Very small helper for persisting key/value data in SQLite."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._conn = sqlite3.connect(DB_PATH)
         self._ensure_table()
 
-    def __del__(self):
+    def close(self) -> None:
         if hasattr(self, "_conn") and self._conn:
             self._conn.close()
 
@@ -40,3 +42,6 @@ class SqlStore:
             (key,),
         ).fetchone()
         return row[0] if row else None
+
+
+__all__ = ["SqlStore"]
