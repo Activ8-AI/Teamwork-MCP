@@ -18,9 +18,6 @@ configs/notion_secrets.json
 *.key
 *.p12
 *.pfx
-# Local secrets / caches (never commit)
-.secrets.cache.json
-configs/notion_secrets.json
 configs/notion_secrets.*.json
 # ---- Charter Standard: Never commit secrets/caches/artifacts ----
 .secrets.cache.json
