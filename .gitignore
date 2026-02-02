@@ -87,6 +87,3 @@ custody/*.db
 dist/
 .pytest_cache/
 *.db
-
-# Test databases
-custody/*.db
