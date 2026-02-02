@@ -13,6 +13,9 @@ on:
 jobs:
   update-changelog:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
 
     steps:
