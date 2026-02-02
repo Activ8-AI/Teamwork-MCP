@@ -61,8 +61,14 @@ async function main() {
         await notion.pages.create({ parent: { database_id: dbId }, properties });
         published += 1;
       } catch (err) {
-        // continue on error, but log for diagnostics
-        console.error(`[notion-relay] Failed to publish ${kind} item:`, err && err.message ? err.message : err);
+        // Log safe identifier (Name) and error; avoid exposing sensitive fields like ClientId
+        const itemName = item.Name || item.name || '[unknown]';
+        const errorMsg = err && err.message ? err.message : String(err);
+        console.error(`[notion-relay] Failed to publish ${kind} item "${itemName}":`, errorMsg);
+        // Full item dump only when NOTION_RELAY_DEBUG is set (use with caution - may expose secrets)
+        if (process.env.NOTION_RELAY_DEBUG === 'true') {
+          console.error(`[notion-relay] DEBUG item data:`, JSON.stringify(item));
+        }
       }
     }
     return { kind, dbId, published, attempted: limited.length };

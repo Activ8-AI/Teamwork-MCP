@@ -347,6 +347,7 @@ pre-commit install
 - Black (Python)
 - Flake8 (Python)
 - Markdownlint
+- NPM security audit (fails on high-severity vulnerabilities)
 
 **Run manually:**
 ```bash
