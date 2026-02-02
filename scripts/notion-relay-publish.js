@@ -61,8 +61,8 @@ async function main() {
         await notion.pages.create({ parent: { database_id: dbId }, properties });
         published += 1;
       } catch (err) {
-        // continue on error, but log for diagnostics
-        console.error(`[notion-relay] Failed to publish ${kind} item:`, err && err.message ? err.message : err);
+        console.error(`[notion-relay] Failed to publish item to ${kind}:`, item, err);
+        // continue on error, report summary only
       }
     }
     return { kind, dbId, published, attempted: limited.length };
