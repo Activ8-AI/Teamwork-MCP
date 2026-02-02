@@ -8,6 +8,9 @@ on:
       - 'codex/collaboration/notion-relay.json'
       - '.github/workflows/notion-relay.yml'
 
+permissions:
+  contents: read
+
 jobs:
   plan:
     runs-on: ubuntu-latest
