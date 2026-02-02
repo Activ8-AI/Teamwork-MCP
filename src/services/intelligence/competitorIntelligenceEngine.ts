@@ -1,4 +1,5 @@
 import fs from 'fs';
+import fsPromises from 'fs/promises';
 import path from 'path';
 import crypto from 'crypto';
 import logger from '../../utils/logger.js';
@@ -20,6 +21,21 @@ interface CompetitorMapFile {
   clients?: ClientCompetitorProfile[];
 }
 
+async function ensureDirectory(target: string): Promise<void> {
+  try {
+    await fsPromises.access(target);
+  } catch {
+    await fsPromises.mkdir(target, { recursive: true });
+  }
+}
+
+async function ensureFoundations(): Promise<void> {
+  await Promise.all([
+    ensureDirectory(COMP_INTEL_ROOT),
+    ensureDirectory(BRIEFS_DIR),
+    ensureDirectory(path.dirname(DELTA_LOG)),
+    ensureDirectory(path.dirname(REFLEX_PIPELINE_FILE)),
+  ]);
 function ensureDirectory(target: string): void {
   if (!fs.existsSync(target)) {
     fs.mkdirSync(target, { recursive: true });
@@ -65,6 +81,29 @@ function normalizeConfidence(value?: number): number {
   return Math.max(0, Math.min(1, value));
 }
 
+function sanitizePathComponent(input: string): string {
+  // Remove any characters that could be used for path traversal or other attacks
+  return input.replace(/[^a-zA-Z0-9_-]/g, '_');
+}
+
+function computeDueDate(severity: CompetitorDeltaInput['severity']): string {
+  let days: number;
+  switch (severity) {
+    case 'critical':
+    case 'high':
+      days = 2;
+      break;
+    case 'medium':
+      days = 5;
+      break;
+    case 'low':
+      days = 10;
+      break;
+    default:
+      // Fallback for undefined or unexpected severity values
+      days = 5;
+      logger.warn(`Unexpected severity value: ${severity}, defaulting to 5 days`);
+  }
 function computeDueDate(severity: CompetitorDeltaInput['severity']): string {
   const days = severity === 'critical' || severity === 'high' ? 2 : severity === 'medium' ? 5 : 10;
   const due = new Date();
@@ -81,6 +120,7 @@ function buildBrief(record: CompetitorDeltaRecord): string {
     `- **Severity:** ${record.severity || 'medium'}`,
     `- **Confidence Score:** ${(record.confidence ?? 0.72).toFixed(2)}`,
     `- **Custodian Hash:** ${record.custodianHash}`,
+    `- **Watcher Agents:** ${record.watcherAgents.length ? record.watcherAgents.join(', ') : 'unassigned'}`,
     `- **Watcher Agents:** ${record.watcherAgents.length > 0 ? record.watcherAgents.join(', ') : 'unassigned'}`,
     '',
     '## Summary',
@@ -148,6 +188,17 @@ async function routeToTeamwork(record: CompetitorDeltaRecord, tasklistId?: strin
     return;
   }
   const targetTasklistId = tasklistId || process.env.TEAMWORK_COMP_INTEL_TASKLIST_ID || '';
+  const payload = buildTaskPayload(record);
+  await createTask(String(targetTasklistId), payload);
+  logger.info(`Created Teamwork task for competitor delta ${record.id}`);
+}
+
+async function persistRecord(record: CompetitorDeltaRecord, brief: string): Promise<void> {
+  await ensureFoundations();
+  await Promise.all([
+    fsPromises.appendFile(DELTA_LOG, JSON.stringify(record) + '\n', { encoding: 'utf8' }),
+    fsPromises.writeFile(path.resolve(process.cwd(), record.briefPath), brief, { encoding: 'utf8' }),
+    fsPromises.appendFile(REFLEX_PIPELINE_FILE, JSON.stringify(record) + '\n', { encoding: 'utf8' }),
   try {
     const payload = buildTaskPayload(record);
     await createTask(String(targetTasklistId), payload);
@@ -167,6 +218,27 @@ async function persistRecord(record: CompetitorDeltaRecord, brief: string): Prom
 }
 
 async function routeToHandoff(record: CompetitorDeltaRecord, channel?: string): Promise<void> {
+  await enqueueHandoff({
+    title: `Competitor delta detected: ${record.competitorName || record.competitorId}`,
+    description: record.summary,
+    hypothesis: record.marketImpact || 'Requires evaluation',
+    targets: [
+      { name: 'NotionRelay', channel: channel || 'competitor-intelligence' },
+      { name: 'PrimeAgent' },
+      { name: 'ClaudeAgent' },
+    ],
+    context: {
+      projectId: record.metadata?.projectId as number | undefined,
+      entity: 'competitor-delta',
+      metadata: {
+        competitorId: record.competitorId,
+        briefPath: record.briefPath,
+        severity: record.severity,
+      },
+    },
+    priority: record.severity === 'critical' || record.severity === 'high' ? 'high' : 'normal',
+  });
+  logger.info(`Enqueued handoff for competitor delta ${record.id}`);
   try {
     await enqueueHandoff({
       title: `Competitor delta detected: ${record.competitorName || record.competitorId}`,
@@ -215,6 +287,27 @@ export async function ingestCompetitorDelta(delta: CompetitorDeltaInput): Promis
     },
     custodianHash,
     confidence: normalizeConfidence(delta.confidence),
+    briefPath: path.join('competitor-intel', 'briefs', `${sanitizePathComponent(delta.clientId)}-${timestamp.replace(/[:.]/g, '-')}.md`),
+  };
+
+  const brief = buildBrief(record);
+  await persistRecord(record, brief);
+
+  // Execute routing in parallel, but catch errors individually to ensure both are attempted
+  const routingResults = await Promise.allSettled([
+    routeToTeamwork(record, client?.teamworkTasklistId),
+    routeToHandoff(record, client?.reflexChannel),
+  ]);
+
+  // Log any routing failures
+  routingResults.forEach((result, index) => {
+    if (result.status === 'rejected') {
+      const routeName = index === 0 ? 'Teamwork' : 'Handoff';
+      logger.error(`Failed to route to ${routeName} for competitor delta ${record.id}: ${result.reason}`);
+    }
+  });
+
+  return record;
     briefPath: path.join('competitor-intel', 'briefs', `${delta.clientId.replace(/[^a-zA-Z0-9_-]/g, '_')}-${timestamp.replace(/[:.]/g, '-')}.md`),
   };
 

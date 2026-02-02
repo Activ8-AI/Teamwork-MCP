@@ -1,0 +1,124 @@
+name: Update Changelog
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 0.1.17-alpha)'
+        required: false
+
+jobs:
+  update-changelog:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Generate changelog entry
+        id: changelog
+        run: |
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+          PR_BODY="${{ github.event.pull_request.body }}"
+
+          # Categorize based on commit message prefix
+          CATEGORY="Changed"
+          if [[ "$PR_TITLE" == feat:* ]] || [[ "$PR_TITLE" == *"New Feature"* ]]; then
+            CATEGORY="Added"
+          elif [[ "$PR_TITLE" == fix:* ]] || [[ "$PR_TITLE" == *"Bug Fix"* ]]; then
+            CATEGORY="Fixed"
+          elif [[ "$PR_TITLE" == security:* ]] || [[ "$PR_TITLE" == *"Security"* ]]; then
+            CATEGORY="Security"
+          elif [[ "$PR_TITLE" == chore:* ]] || [[ "$PR_TITLE" == *"Update"* ]]; then
+            CATEGORY="Changed"
+          fi
+
+          echo "category=$CATEGORY" >> $GITHUB_OUTPUT
+          echo "entry=- $PR_TITLE (#$PR_NUMBER) @$PR_AUTHOR" >> $GITHUB_OUTPUT
+
+      - name: Update CHANGELOG.md
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          VERSION="${{ github.event.inputs.version }}"
+
+          # Create CHANGELOG.md if it doesn't exist
+          if [ ! -f CHANGELOG.md ]; then
+            cat > CHANGELOG.md << 'EOF'
+          # Changelog
+
+          All notable changes to this project will be documented in this file.
+
+          The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+          and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+          ## [Unreleased]
+
+          ### Added
+
+          ### Changed
+
+          ### Fixed
+
+          ### Security
+          EOF
+          fi
+
+          # Add entry to appropriate category
+          CATEGORY="${{ steps.changelog.outputs.category }}"
+          ENTRY="${{ steps.changelog.outputs.entry }}"
+
+          # Use awk to insert entry in the right section
+          awk -v cat="### $CATEGORY" -v entry="$ENTRY" '
+            /^### / { section=$0 }
+            { print }
+            section == cat && /^$/ && !done { print entry; done=1 }
+          ' CHANGELOG.md > CHANGELOG.tmp
+
+          mv CHANGELOG.tmp CHANGELOG.md
+
+      - name: Check for changes
+        id: check
+        run: |
+          if git diff --quiet CHANGELOG.md; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push changes
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git add CHANGELOG.md
+          git commit -m "docs: Update CHANGELOG for PR #${{ github.event.pull_request.number }}"
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on PR
+        if: steps.check.outputs.changed == 'true' && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ github.event.pull_request.number }},
+              body: '✅ CHANGELOG.md has been automatically updated for this PR.'
+            });

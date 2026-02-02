@@ -3,6 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/@vizioz/teamwork-mcp.svg)](https://www.npmjs.com/package/@vizioz/teamwork-mcp)
 [![CI](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/ci.yml/badge.svg)](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/ci.yml)
 [![Connection Test](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/connection-test.yml/badge.svg)](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/connection-test.yml)
+[![Publish Docker Image](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/publish-image.yml/badge.svg)](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/publish-image.yml)
 [![Publish](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/npm-publish.yml)
 [![Publish Image](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/publish-image.yml/badge.svg)](https://github.com/Activ8-AI/Teamwork-MCP/actions/workflows/publish-image.yml)
 
@@ -57,6 +58,7 @@ All high-risk operations are:
 
 ## Prerequisites
 
+- Node.js 20.x (LTS) - Required for all environments (CI, Docker, local development)
 - Node.js (20.x LTS recommended)
 - npm or yarn
 - Teamwork account with API access
