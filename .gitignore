@@ -18,6 +18,18 @@ configs/notion_secrets.json
 *.key
 *.p12
 *.pfx
+# Local secrets / caches (never commit)
+.secrets.cache.json
+configs/notion_secrets.json
+configs/notion_secrets.*.json
+# ---- Charter Standard: Never commit secrets/caches/artifacts ----
+.secrets.cache.json
+.secrets*.json
+configs/notion_secrets.json
+
+# Logs / transcripts
+*.jsonl
+*transcript*
 
 # Logs
 logs/
@@ -59,6 +71,15 @@ teamwork.config.json
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+*.egg
+.pytest_cache/
+
+# Test databases
+custody/*.db
 *.so
 .Python
 *.egg

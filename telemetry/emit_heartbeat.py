@@ -1,12 +1,16 @@
+from __future__ import annotations
+
 import socket
 import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
+from custody.custodian_ledger import log_event
+
 
 def generate_heartbeat(additional_payload: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """Generate a standard heartbeat payload."""
-    payload = {
+    payload: Dict[str, Any] = {
         "id": str(uuid.uuid4()),
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "host": socket.gethostname(),
@@ -17,26 +21,13 @@ def generate_heartbeat(additional_payload: Optional[Dict[str, Any]] = None) -> D
         payload.update(additional_payload)
 
     return payload
-from __future__ import annotations
-
-from datetime import datetime, timezone
-from typing import Any, Dict
-
-from custody.custodian_ledger import CustodianLedger
 
 
-def emit_heartbeat(status: str = "ok", meta: Dict[str, Any] | None = None) -> Dict[str, Any]:
-    """Record and return the most recent heartbeat payload."""
-    ledger = CustodianLedger()
-    payload: Dict[str, Any] = {
-        "status": status,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-    }
-    if meta:
-        payload.update(meta)
-
-    ledger.record_heartbeat(status=status, meta=payload)
+def emit_heartbeat(status: str = "ok", meta: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    """Generate and record a heartbeat payload to the local ledger."""
+    payload = generate_heartbeat({"status": status, **(meta or {})})
+    log_event("HEARTBEAT", payload)
     return payload
 
 
-__all__ = ["emit_heartbeat"]
+__all__ = ["generate_heartbeat", "emit_heartbeat"]

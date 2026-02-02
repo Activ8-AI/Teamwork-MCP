@@ -1,20 +1,26 @@
+from __future__ import annotations
+
 import json
 import sqlite3
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 DB_PATH = Path(__file__).resolve().parent / "ledger.db"
 
+EVENT_AUTONOMY_LOOP = "AUTONOMY_LOOP"
+EVENT_HEARTBEAT = "HEARTBEAT"
+
 
 def _ensure_table(connection: sqlite3.Connection) -> None:
     connection.execute(
         """
         CREATE TABLE IF NOT EXISTS ledger (
-            id INTEGER PRIMARY KEY,
-            timestamp TEXT,
-            event_type TEXT,
-            payload TEXT
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp TEXT NOT NULL,
+            event_type TEXT NOT NULL,
+            payload TEXT NOT NULL
         )
         """
     )
@@ -53,57 +59,37 @@ def get_last_events(n: int = 10) -> List[Dict[str, Any]]:
         events.append({"timestamp": timestamp, "event": event_type, "payload": payload})
 
     return events
-from __future__ import annotations
-
-from dataclasses import dataclass
-from datetime import datetime
-from typing import Any, Dict, List, Optional
-
-from memory.sql_store.sql_store import SQLStore
 
 
-EVENT_AUTONOMY_LOOP = "AUTONOMY_LOOP"
-EVENT_HEARTBEAT = "HEARTBEAT"
-
-
-@dataclass
+@dataclass(frozen=True)
 class LedgerEntry:
-    id: int
+    timestamp: str
     event_type: str
     payload: Dict[str, Any]
-    created_at: str
 
     def as_datetime(self) -> datetime:
-        return datetime.fromisoformat(self.created_at)
+        return datetime.fromisoformat(self.timestamp)
 
 
 class CustodianLedger:
-    """Thin layer over the SQL store that understands the event types we emit."""
+    """Thin wrapper that writes events to the local SQLite ledger."""
 
-    def __init__(self, store: Optional[SQLStore] = None) -> None:
-        self.store = store or SQLStore()
+    def record_event(self, event_type: str, payload: Dict[str, Any]) -> None:
+        log_event(event_type, payload)
 
-    def record_event(self, event_type: str, payload: Dict[str, Any]) -> int:
-        return self.store.log_event(event_type, payload)
-
-    def record_heartbeat(self, status: str, meta: Dict[str, Any] | None = None) -> int:
+    def record_heartbeat(self, status: str, meta: Dict[str, Any] | None = None) -> None:
         payload = {"status": status, **(meta or {})}
-        return self.record_event(EVENT_HEARTBEAT, payload)
+        self.record_event(EVENT_HEARTBEAT, payload)
 
-    def record_autonomy_loop(self, cycle_id: str, meta: Dict[str, Any] | None = None) -> int:
+    def record_autonomy_loop(self, cycle_id: str, meta: Dict[str, Any] | None = None) -> None:
         payload = {"cycle_id": cycle_id, **(meta or {})}
-        return self.record_event(EVENT_AUTONOMY_LOOP, payload)
+        self.record_event(EVENT_AUTONOMY_LOOP, payload)
 
-    def recent(self, event_type: Optional[str] = None, limit: int = 20) -> List[LedgerEntry]:
-        raw_entries = self.store.fetch_events(event_type=event_type, limit=limit)
+    def recent(self, limit: int = 20) -> List[LedgerEntry]:
+        raw = get_last_events(limit)
         return [
-            LedgerEntry(
-                id=entry["id"],
-                event_type=entry["event_type"],
-                payload=entry["payload"],
-                created_at=entry["created_at"],
-            )
-            for entry in raw_entries
+            LedgerEntry(timestamp=e["timestamp"], event_type=e["event_type"], payload=e["payload"])
+            for e in raw
         ]
 
 
@@ -112,4 +98,6 @@ __all__ = [
     "LedgerEntry",
     "EVENT_AUTONOMY_LOOP",
     "EVENT_HEARTBEAT",
+    "get_last_events",
+    "log_event",
 ]
