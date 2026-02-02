@@ -85,7 +85,11 @@ DATE=$(date +%Y-%m-%d)
 
 if [ -f "CHANGELOG.md" ]; then
   # Replace [Unreleased] with version and date
-  sed -i "s/## \[Unreleased\]/## [${NEW_VERSION}] - ${DATE}\n\n## [Unreleased]/" CHANGELOG.md
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "s/## \[Unreleased\]/## [${NEW_VERSION}] - ${DATE}\n\n## [Unreleased]/" CHANGELOG.md
+  else
+    sed -i "s/## \[Unreleased\]/## [${NEW_VERSION}] - ${DATE}\n\n## [Unreleased]/" CHANGELOG.md
+  fi
 else
   echo -e "${YELLOW}⚠️  CHANGELOG.md not found${NC}"
 fi
