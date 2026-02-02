@@ -59,7 +59,7 @@ repos:
     hooks:
       - id: npm-audit
         name: NPM Security Audit
-        entry: bash -c 'npm audit --audit-level=high || echo "Security vulnerabilities found - review before pushing"'
+        entry: bash -c 'npm audit --audit-level=high'
         language: system
         pass_filenames: false
         always_run: true
