@@ -1,4 +1,5 @@
 """Pytest fixtures for test isolation."""
+import os
 import sqlite3
 import tempfile
 from pathlib import Path
@@ -15,7 +16,6 @@ def isolated_ledger_db(monkeypatch) -> Generator[Path, None, None]:
     """
     # Create a temporary file and close it immediately so SQLite can use it
     fd, tmp_path = tempfile.mkstemp(suffix=".db")
-    import os
     os.close(fd)  # Close the file descriptor immediately
     tmp_db_path = Path(tmp_path)
     
