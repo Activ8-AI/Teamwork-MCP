@@ -96,26 +96,26 @@ app.post('/webhook/prime', verifyRequest, async (req, res) => {
   }
 });
 
-app.post('/webhook/clawed', verifyRequest, async (req, res) => {
+async function handleClaudeWebhook(req: express.Request, res: express.Response) {
   try {
     const payload = req.body || {};
     await enqueue({
-      title: payload.task || payload.task_id || 'Clawed In-Flight',
+      title: payload.task || payload.task_id || 'Claude In-Flight',
       description: `Stage: ${payload.action || 'In-Flight'}`,
-      targets: toTargets('clawed')
+      targets: toTargets('claude')
     });
     res.json({ ok: true });
   } catch (e: any) {
     logger.error(e.message);
     res.status(500).json({ ok: false, error: e.message });
   }
-});
+}
 
-app.post('/webhook/ancillary', verifyRequest, async (req, res) => {
+async function handleNotionWebhook(req: express.Request, res: express.Response) {
   try {
     const payload = req.body || {};
     await enqueue({
-      title: payload.task || payload.task_id || 'Ancillary Review',
+      title: payload.task || payload.task_id || 'Notion Review',
       description: `Stage: ${payload.action || 'Review'}`,
       targets: [{ name: 'NotionRelay' }]
     });
@@ -124,7 +124,15 @@ app.post('/webhook/ancillary', verifyRequest, async (req, res) => {
     logger.error(e.message);
     res.status(500).json({ ok: false, error: e.message });
   }
-});
+}
+
+app.post('/webhook/claude', verifyRequest, handleClaudeWebhook);
+// Backward compatible alias.
+app.post('/webhook/clawed', verifyRequest, handleClaudeWebhook);
+
+app.post('/webhook/notion', verifyRequest, handleNotionWebhook);
+// Backward compatible alias.
+app.post('/webhook/ancillary', verifyRequest, handleNotionWebhook);
 
   return app;
 }
