@@ -46,7 +46,6 @@
   },
   "homepage": "https://github.com/activ8-ai/teamwork-mcp#readme",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.24.0",
     "@notionhq/client": "^2.2.15",
     "@modelcontextprotocol/sdk": "^1.25.3",
     "@types/minimist": "^1.2.5",
