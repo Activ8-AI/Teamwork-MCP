@@ -734,7 +734,7 @@ SLACK_CHANNEL_DEFAULT="#ops"
 
 EMAIL_PROVIDER="sendgrid"
 EMAIL_API_KEY="<key>"
-EMAIL_TO="stan@theleverageway.com"
+EMAIL_TO="ops@example.com"
 
 NOTION_API_TOKEN="<token>"
 NOTION_EVIDENCE_DB_ID="<db_id>"
