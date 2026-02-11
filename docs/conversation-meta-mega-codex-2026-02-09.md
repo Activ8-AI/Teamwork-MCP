@@ -608,6 +608,7 @@ def compute_routing(evt: EventV1) -> dict:
         routing["slack"] = True
     if evt.severity == "critical":
         routing["email"] = True
+    if evt.severity in {"blocked", "critical"}:
         routing["notion"] = True
     return routing
 
