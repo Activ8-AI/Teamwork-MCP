@@ -83,7 +83,7 @@ These are forks with no evidence of modification beyond upstream, last touched b
 **Infrastructure / Docker (4)**
 - compose-for-agents, docker-mcp-registry, gitleaks, semanticworkbench
 
-**HubSpot (3)**
+**HubSpot (4)**
 - hubspot-project-components, hubspot-cms-vscode, HubSpot-public-api-spec-collection, hubspot-api-python
 
 **Other (5)**
