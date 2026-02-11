@@ -86,7 +86,7 @@ These are forks with no evidence of modification beyond upstream, last touched b
 **HubSpot (4)**
 - hubspot-project-components, hubspot-cms-vscode, HubSpot-public-api-spec-collection, hubspot-api-python
 
-**Other (5)**
+**Other (10)**
 - openai-cookbook, linear, slack-client, blocks, LLaVA-Med
 - MongoDB-ADK-Agents, CoML, airtable.js, hbase, genai-stack
 
