@@ -216,7 +216,7 @@ This is the highest-leverage move because:
 | 11 | servers | MCP org | TypeScript | Feb 4, 2026 |
 | 12 | notion-mcp-server | Notion | TypeScript | Feb 4, 2026 |
 | 13 | chatgpt-codex | OpenAI | Rust | Feb 3, 2026 |
-| 14 | opengpts | LangChain | RTF | Feb 3, 2026 |
+| 14 | opengpts | LangChain | Python | Feb 3, 2026 |
 | 15 | generative-ai | Google | Jupyter | Feb 3, 2026 |
 | 16 | google-cloud-platform-agent-starter-pack | Google | Python | Jan 30, 2026 |
 | 17 | openai-cookbook | OpenAI | Jupyter | Jan 30, 2026 |
