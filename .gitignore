@@ -11,6 +11,13 @@ yarn-error.log
 .env.test.local
 .env.production.local
 
+# Secrets and credentials
+.secrets.cache.json
+configs/notion_secrets.json
+*.pem
+*.key
+*.p12
+*.pfx
 # Local secrets / caches (never commit)
 .secrets.cache.json
 configs/notion_secrets.json
@@ -74,7 +81,12 @@ dist/
 # Test databases
 custody/*.db
 *.so
+.Python
 *.egg
 *.egg-info/
 dist/
+.pytest_cache/
 *.db
+
+# Test databases
+custody/*.db
