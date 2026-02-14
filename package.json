@@ -20,7 +20,9 @@
     "relay:serve": "node build/servers/notion-relay-server.js",
     "relay:test": "RELAY_SECRET=testsecret node tests/relay-contract.test.js",
     "status:badge": "node scripts/status-badge.js",
-    "monitoring:create": "node scripts/create-monitoring-tasks.js"
+    "monitoring:create": "node scripts/create-monitoring-tasks.js",
+    "notion:relay:plan": "node scripts/notion-relay-publish.js",
+    "notion:relay:publish": "node scripts/notion-relay-publish.js --publish"
   },
   "files": [
     "build",
@@ -44,6 +46,8 @@
   },
   "homepage": "https://github.com/activ8-ai/teamwork-mcp#readme",
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.24.0",
+    "@notionhq/client": "^2.2.15",
     "@modelcontextprotocol/sdk": "^1.25.3",
     "@types/minimist": "^1.2.5",
     "axios": "^1.8.2",

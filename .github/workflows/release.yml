@@ -1,0 +1,134 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 0.1.17-alpha)'
+        required: true
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: |
+          npm run build
+          npm audit --audit-level=high
+
+      - name: Get version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION=${GITHUB_REF#refs/tags/v}
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Extract changelog
+        id: changelog
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+
+          if [ -f "CHANGELOG.md" ]; then
+            # Extract section for this version
+            CHANGELOG=$(awk "/## \[$VERSION\]/,/## \[/" CHANGELOG.md | sed '1d;$d')
+            echo "changelog<<EOF" >> $GITHUB_OUTPUT
+            echo "$CHANGELOG" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "changelog=Release $VERSION" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          release_name: Release ${{ steps.version.outputs.version }}
+          body: |
+            ## Changes
+
+            ${{ steps.changelog.outputs.changelog }}
+
+            ## Installation
+
+            ```bash
+            npm install @vizioz/teamwork-mcp@${{ steps.version.outputs.version }}
+            ```
+
+            ## Docker
+
+            ```bash
+            docker pull ghcr.io/activ8-ai/teamwork-mcp:${{ steps.version.outputs.version }}
+            ```
+
+            ## What's Changed
+            **Full Changelog**: https://github.com/${{ github.repository }}/compare/v0.1.16-alpha...${{ steps.version.outputs.tag }}
+          draft: false
+          prerelease: ${{ contains(steps.version.outputs.version, 'alpha') || contains(steps.version.outputs.version, 'beta') }}
+
+      - name: Publish to NPM
+        if: "!contains(steps.version.outputs.version, 'alpha') && !contains(steps.version.outputs.version, 'beta')"
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}
+            ghcr.io/${{ github.repository }}:latest
+          platforms: linux/amd64,linux/arm64
+
+      - name: Create post-release issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Post-Release Tasks for v${{ steps.version.outputs.version }}`,
+              body: `## Post-Release Checklist
+
+              Release v${{ steps.version.outputs.version }} has been published. Complete these tasks:
+
+              - [ ] Verify NPM package: https://www.npmjs.com/package/@vizioz/teamwork-mcp
+              - [ ] Verify Docker image: \`docker pull ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}\`
+              - [ ] Test installation in clean environment
+              - [ ] Update documentation if needed
+              - [ ] Announce release (if applicable)
+              - [ ] Monitor for issues
+
+              Release created by: @${{ github.actor }}
+              Workflow: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`,
+              labels: ['release', 'automated', 'task']
+            });
