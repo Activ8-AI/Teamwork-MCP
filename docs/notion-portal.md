@@ -26,8 +26,8 @@ Relay Webhooks
 --------------
 
 - Prime → POST /webhook/prime
-- Clawed → POST /webhook/clawed
-- Ancillary → POST /webhook/ancillary
+- Claude → POST /webhook/claude (legacy alias: /webhook/clawed)
+- Notion → POST /webhook/notion (legacy alias: /webhook/ancillary)
 
 Payload (example)
 ```json

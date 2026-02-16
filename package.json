@@ -44,9 +44,9 @@
   },
   "homepage": "https://github.com/activ8-ai/teamwork-mcp#readme",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.25.3",
+    "@modelcontextprotocol/sdk": "^1.26.0",
     "@types/minimist": "^1.2.5",
-    "axios": "^1.8.2",
+    "axios": "^1.13.5",
     "dotenv": "^16.4.5",
     "express": "^5.1.0",
     "minimist": "^1.2.8",

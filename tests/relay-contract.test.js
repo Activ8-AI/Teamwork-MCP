@@ -80,3 +80,39 @@ test('Notion relay webhook rejects invalid signature', async () => {
     assert.equal(body.ok, false);
   });
 });
+
+
+test('Notion relay supports claude and notion webhook paths', async () => {
+  const secret = 'testsecret';
+  const payload = { task_id: 'test-456', action: 'Review' };
+
+  const app = createNotionRelayApp({
+    relaySecret: secret,
+    allowUnauthenticatedWhenUnset: false,
+    enqueue: async () => {}
+  });
+
+  await withServer(app, async (port) => {
+    const sig = sign(payload, secret);
+
+    const claudeRes = await fetch(`http://127.0.0.1:${port}/webhook/claude`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-relay-signature': sig
+      },
+      body: JSON.stringify(payload)
+    });
+    assert.equal(claudeRes.status, 200);
+
+    const notionRes = await fetch(`http://127.0.0.1:${port}/webhook/notion`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-relay-signature': sig
+      },
+      body: JSON.stringify(payload)
+    });
+    assert.equal(notionRes.status, 200);
+  });
+});
