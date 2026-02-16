@@ -18,9 +18,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Validate PR title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          PR_TITLE="${{ github.event.pull_request.title }}"
-
           # Check for conventional commit format
           if [[ ! "$PR_TITLE" =~ ^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|security)(\(.+\))?: ]]; then
             echo "::error::PR title must follow conventional commits format: type(scope): description"
@@ -31,17 +31,17 @@ jobs:
           echo "✅ PR title follows conventional commits"
 
       - name: Check PR description
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
         run: |
-          PR_BODY="${{ github.event.pull_request.body }}"
-
           if [ -z "$PR_BODY" ] || [ ${#PR_BODY} -lt 20 ]; then
             echo "::warning::PR description is too short. Please provide detailed context."
           fi
 
           # Check for required sections
           MISSING=()
-          echo "$PR_BODY" | grep -q "## Summary" || MISSING+=("Summary")
-          echo "$PR_BODY" | grep -q "## Changes" || echo "$PR_BODY" | grep -q "## Testing" || MISSING+=("Changes/Testing")
+          printf '%s' "$PR_BODY" | grep -q "## Summary" || MISSING+=("Summary")
+          printf '%s' "$PR_BODY" | grep -q "## Changes" || printf '%s' "$PR_BODY" | grep -q "## Testing" || MISSING+=("Changes/Testing")
 
           if [ ${#MISSING[@]} -gt 0 ]; then
             echo "::warning::PR description missing sections: ${MISSING[*]}"
