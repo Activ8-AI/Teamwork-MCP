@@ -20,7 +20,19 @@
     "relay:serve": "node build/servers/notion-relay-server.js",
     "relay:test": "RELAY_SECRET=testsecret node tests/relay-contract.test.js",
     "status:badge": "node scripts/status-badge.js",
-    "monitoring:create": "node scripts/create-monitoring-tasks.js"
+    "monitoring:create": "node scripts/create-monitoring-tasks.js",
+    "session:closeout": "node -e \"console.log('session:closeout delegated to centralized control plane runbook')\"",
+    "productive-ratio": "node -e \"console.log('productive-ratio delegated to centralized control plane runbook')\"",
+    "debriefs:push": "node -e \"console.log('debriefs:push delegated to centralized control plane runbook')\"",
+    "state:check:write": "node -e \"console.log('state:check:write delegated to centralized control plane runbook')\"",
+    "operationalize:build": "node scripts/build-operationalization-check.mjs",
+    "operationalize:repo": "node scripts/operationalize-buildwide.mjs",
+    "action-persistence:check": "node scripts/action-persistence-self-check.mjs",
+    "lint:aliases": "node scripts/lint-alias-drift.mjs",
+    "query:source-ladder": "node scripts/query-source-ladder.mjs",
+    "session:boot": "node scripts/session-boot.mjs",
+    "context:sync:self": "node scripts/sync-context-pack.mjs --target . --strict",
+    "agents:sync:auto": "node scripts/sync-agent-instructions.mjs --fix --push-notion --emit-notion"
   },
   "files": [
     "build",

@@ -78,3 +78,7 @@ custody/*.db
 *.egg-info/
 dist/
 *.db
+artifacts/prompt-library/operationalization/
+artifacts/action-persistence/
+artifacts/build-operationalization/
+artifacts/source-query-ladder/
