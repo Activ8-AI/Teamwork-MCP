@@ -1,24 +1,24 @@
 <!-- managed-by: activ8-ai-context-pack | pack-version: 1.2.0 -->
-<!-- source-sha: 49e7fd4 -->
+<!-- source-sha: a0d4785 -->
 <!-- platform: github-copilot | tier: T2 | version: 1.2.0 | policy: ai-agent-policy@wrapper | updated: 2026-03-18 -->
 
-# GitHub Copilot Instructions — Teamwork-MCP
+# GitHub Copilot Instructions — @vizioz/teamwork-mcp
 
 **Charter binding:** Activ8 AI Operational Execution & Accountability Charter (v1.5).
 
 ## Source of truth
 
-- **Policy:** `.github/ai-agent-policy.md` (this repo) -> points to canonical central policy.
-- **Map:** `docs/SOURCES-OF-TRUTH.md` (this repo) -> points to canonical central map.
+- **Policy:** `.github/ai-agent-policy.md` (this repo) → points to canonical central policy.
+- **Map:** `docs/SOURCES-OF-TRUTH.md` (this repo) → points to canonical central map.
 - **Audience + surface contract:** `docs/AUDIENCE-SURFACE-CONTRACT.md`
 
 ## Operating rules (minimal)
 
 - **Output contract:** `Progress | Evidence | Blockers`
-- **Source-first:** read the file or record before asserting what exists.
-- **Evidence-citation:** cite file paths and command output for factual claims.
-- **Trace-first:** bind `Canonical Source`, `Genesis`, and `Trace Origin` on governed surfaces.
-- **No root drift:** follow this repo's root and structure rules if present.
+- **Source-first:** read the file/record before asserting what exists.
+- **Evidence-citation:** cite file path + line numbers (or tool output) for factual claims.
+- **Trace-first:** assume prior lineage exists; bind `Canonical Source`, `Genesis`, and `Trace Origin` on governed surfaces.
+- **No root drift:** follow this repo’s root/structure rules if present.
 
 ## Seek-First Planning Gate
 
@@ -40,3 +40,32 @@
 
 - Do not add obvious-answer closing questions.
 - If the next step is already resolved by the user instruction, perform it.
+
+## Runtime Session Bootstrap Gate
+
+- `agent_session_init` is the runtime bootstrap gate for identity-bound sessions.
+- Call it before substantive MCP tool use and continue from the returned seek-first planning payload.
+- If the runtime returns `SESSION_INIT_REQUIRED`, bootstrap first instead of working around the gate.
+
+## Persistent Learning System Contract
+
+- MAOS is a persistent learning system that happens to execute work.
+- Govern work through sensing, thinking, execution, and learning surfaces.
+- The minimum learning loop is `Experience -> Extraction -> Structuring -> Storage -> Retrieval -> Application -> Feedback`.
+- Learning is not complete until the result is stored, indexed, and reused automatically.
+
+## Agentic Governance Five-Plane Contract
+
+- Agentic AI governance is a multi-plane control problem, not a prompt-only problem.
+- Govern the system through five linked planes: control, execution, data, learning, and safety.
+- Use OODA for live operations, PDCA for governed change, and state -> action -> outcome -> update for policy adaptation.
+- No execution without authority, no learning without provenance, and no adaptation without evaluation, drift detection, and rollback.
+
+## NIST AI RMF Mapping
+
+- Use `artifacts/prompt-library/MAOS-NIST-AI-RMF-MAPPING.md` as the external governance import layer for MAOS.
+- `GOVERN` -> control plane.
+- `MAP` -> context framing and go/no-go.
+- `MEASURE` -> evidence, telemetry, and evaluation.
+- `MANAGE` -> response, override, rollback, deactivation, and continual improvement.
+- Import NIST as enforceable control-plane logic for socio-technical agent systems, not as a generic compliance checklist.
